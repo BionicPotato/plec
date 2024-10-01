@@ -1,3 +1,4 @@
+Make statements get added to Target
 Better error system
 Move headers to an include directory
 Add a few statements/expressions to make the next things possible/relevant

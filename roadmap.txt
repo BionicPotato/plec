@@ -1,4 +1,5 @@
 Make statements get added to Target
+Make compile script work for a fresh repo
 Better error system
 Move headers to an include directory
 Add a few statements/expressions to make the next things possible/relevant

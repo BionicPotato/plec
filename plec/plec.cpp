@@ -49,29 +49,6 @@ using namespace std;
     }
 }*/
 
-/*
-    Next things:
-
-    Better error system
-    Move headers to an include directory
-    Add a few statements/expressions to make the next things possible/relevant
-    Distinguish between Variable (the variable) and VariableExpr (expression that refers to a variable)
-        - more generally, distinguish between "something" and "expression that refers to something"
-    Add a way to get the type of an expression (error if types don't match)
-    Conflate statements and expressions: statements are just expressions that evaluate to void
-    Distinguish between runtime statements/expressions and compile-time statements/expressions (the latter don't have virtual function codegen())
-    When getNextStatement encounters a {, it creates a StatementList and passes its lexer to it so it can get its tokens; when the sub-StatementList's getNextStatement encounters }, it returns false
-    Add flow control
-
-    Generalize run and codegen like this:
-        void XyzStmt::run(Runner& r) {
-            r.push(xyz);
-            r.pop(abc);
-            r.mem.at(123).set(456);
-        }
-    which can then be called either with a CodeGenerator for compiling or an Interpreter for interpreting
-    Do not put CodeGenerator and Interpreter in the core library; another library
-*/
 int main(int argc, char** argv)
 {
     int exitCode = EXIT_SUCCESS;

@@ -1,0 +1,1 @@
+/usr/bin/clang++ CMakeFiles/plec.dir/plec.cpp.o -o plec  -lplec-core 

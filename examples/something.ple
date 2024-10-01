@@ -1,0 +1,5 @@
+program something;
+
+{ do_something$; };
+
+something $ "something" + something;

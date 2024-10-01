@@ -1,0 +1,3 @@
+program hello;
+
+message : "Hello, world!\n";

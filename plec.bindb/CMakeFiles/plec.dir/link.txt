@@ -1,0 +1,1 @@
+/usr/bin/clang++ -g CMakeFiles/plec.dir/plec.cpp.o -o plec  -lplec-core.db 

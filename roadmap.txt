@@ -10,12 +10,13 @@ Distinguish between runtime statements/expressions and compile-time statements/e
 When getNextStatement encounters a {, it creates a StatementList and passes its lexer to it so it can get its tokens; when the sub-StatementList's getNextStatement encounters }, it returns false
 Add flow control
 
-Generalize run and codegen like this:
+Separate configure and run:
+    void XyzStmt::configure(Configurer& c) {
+        c.addToTarget(shared_from_this());
+    }
     void XyzStmt::run(Runner& r) {
         r.push(xyz);
         r.pop(abc);
         r.mem.at(123).set(456);
     }
-which can then be called either with a CodeGenerator for compiling or an Interpreter for interpreting
 Do not put CodeGenerator and Interpreter in the core library; another library
-

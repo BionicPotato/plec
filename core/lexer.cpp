@@ -51,7 +51,6 @@ void Lexer::ungetChar()
 }
 
 bool Lexer::getNextToken(Token& tok)
-//#define getNextChar if (!input->get(readChar)) return false;
 {
     do {
         if (!getNextChar()) return false;

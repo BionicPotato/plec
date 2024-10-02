@@ -26,69 +26,6 @@ StatementStream::StatementStream(shared_ptr<Lexer> lexp): lexp(lexp), filename(l
 
 bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
 {
-    /*Token tok;
-    stack<shared_ptr<Expression>> exprs;
-    stack<shared_ptr<OperatorExpression>> opExprs;
-
-    auto popOps = [&](shared_ptr<OperatorExpression> opExpr) {
-        while (
-            !opExprs.empty()
-            && (opExprs.top()->getPrecedence() > opExpr->getPrecedence()
-            || (opExprs.top()->getPrecedence() == opExpr->getPrecedence()
-            && opExpr->isLeftAssociative())))
-        {
-            shared_ptr<Expression> ex2 = exprs.top();
-            exprs.pop();
-            shared_ptr<Expression> ex1 = exprs.top();
-            exprs.pop();
-            opExprs.top()->assignOperands(ex1, ex2);
-            exprs.push(opExprs.top());
-            opExprs.pop();
-        }
-        opExprs.push(opExpr);
-    };
-
-    if (!getNextToken(tok)) return false;
-    for (; tok.id != TOK_SEMICOLON; getNextToken(tok))
-    {
-        switch (tok.id)
-        {
-            case TOK_IDENTIFIER:
-                exprs.push(make_shared<VariableExpr>(tok));
-                break;
-            
-            case TOK_STRING:
-                exprs.push(make_shared<StringExpr>(tok));
-                break;
-            
-            case TOK_COLON:
-                popOps(make_shared<VariableAssignExpr>(tok));
-                break;
-
-            case TOK_CALL:
-                popOps(make_shared<FunctionCallExpr>(tok));
-                break;
-            
-            default:
-            case TOK_UNKNOWN:
-                throw UnknownTokenException(tok);
-        }
-    }
-
-    while (!opExprs.empty()) {
-        shared_ptr<Expression> ex2 = exprs.top();
-        exprs.pop();
-        shared_ptr<Expression> ex1 = exprs.top();
-        exprs.pop();
-        opExprs.top()->assignOperands(ex1, ex2);
-        exprs.push(opExprs.top());
-        opExprs.pop();
-    }
-
-    if (exprs.size() != 1) throw AmbiguousStatementException(exprs);
-    stp = exprs.top();
-    return true;*/
-
     Token tok;
     deque<Token> rpntok;
     stack<Token> optok;

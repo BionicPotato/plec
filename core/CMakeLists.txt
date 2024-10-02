@@ -46,8 +46,8 @@ add_library(plec-core SHARED
     exceptions/unexpectedtoken.hpp
     exceptions/unknowntoken.cpp
     exceptions/unknowntoken.hpp
-    runners/astrunner.cpp
-    runners/astrunner.hpp
+    runners/astconfigure.cpp
+    runners/astconfigure.hpp
     stmtstreams/block.cpp
     stmtstreams/block.hpp
     stmtstreams/file.cpp

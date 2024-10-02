@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     AST ast(astfns);
     try {
         ast.parse();
-        ast.prerun();
+        ast.configure();
 	ast.accept(ASTPrintVisitor::instance());
     } catch (exception& e) {
         cerr << e.what() << endl;

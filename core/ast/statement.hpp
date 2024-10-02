@@ -9,5 +9,5 @@ class Statement: public ASTVisitable, public std::enable_shared_from_this<Statem
 {
     public:
         virtual void accept(ASTVisitor& visitor);
-        virtual void run(Runner& r) {}
+        virtual void run(Runner& r);
 };

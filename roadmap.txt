@@ -1,5 +1,4 @@
 Make statements get added to Target
-Make compile script work for a fresh repo
 Switch from shunting yard to recursive ascent(/descent)
 Better error system
 Move headers to an include directory

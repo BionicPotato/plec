@@ -61,8 +61,6 @@ add_library(plec-core SHARED
     expressionparsing.hpp
     lexer.cpp
     lexer.hpp
-    operators.cpp
-    operators.hpp
     runner.hpp
     statementstream.cpp
     statementstream.hpp

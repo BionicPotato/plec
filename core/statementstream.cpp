@@ -1,24 +1,13 @@
 #include "statementstream.hpp"
-#include "ast/blockexpr.hpp"
-#include "ast/program.hpp"
+#include "ast/expressions.hpp"
 #include "ast/statement.hpp"
 #include "stmtstreams/block.hpp"
 #include "expressionparsing.hpp"
 #include "token.hpp"
-#include "ast/expression.hpp"
-#include "ast/functioncallexpr.hpp"
-#include "ast/operatorexpression.hpp"
 #include "ast/programstmt.hpp"
-#include "ast/addexpr.hpp"
-#include "ast/stringexpr.hpp"
-#include "ast/variableexpr.hpp"
-#include "ast/variableassignexpr.hpp"
 #include "exceptions.hpp"
-#include "operators.hpp"
 #include "tokenid.hpp"
-#include <deque>
 #include <list>
-#include <functional>
 #include <stack>
 #include <memory>
 

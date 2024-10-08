@@ -1,5 +1,6 @@
 Move parsing functions in statementstream.cpp to new file
 Remove dead code (operator precedence etc)
+Parse square brackets
 Better error system
 Move headers to an include directory
 Add a few statements/expressions to make the next things possible/relevant

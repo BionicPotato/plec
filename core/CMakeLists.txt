@@ -57,6 +57,8 @@ add_library(plec-core SHARED
     visitors/astvisitor.hpp
     exceptions.cpp
     exceptions.hpp
+    expressionparsing.cpp
+    expressionparsing.hpp
     lexer.cpp
     lexer.hpp
     operators.cpp

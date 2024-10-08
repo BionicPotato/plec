@@ -1,4 +1,3 @@
-Move parsing functions in statementstream.cpp to new file
 Remove dead code (operator precedence etc)
 Parse square brackets
 Better error system

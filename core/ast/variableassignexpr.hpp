@@ -14,3 +14,4 @@ class VariableAssignExpr: public OperatorExpression
         virtual void accept(ASTVisitor& visitor);
         virtual void assignOperands(std::shared_ptr<Expression> a, std::shared_ptr<Expression> b);
 };
+

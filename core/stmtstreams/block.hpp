@@ -8,6 +8,7 @@ class BlockStmtStream: public StatementStream
 {
     public:
         using StatementStream::StatementStream;
+        virtual bool getNextStatement(std::shared_ptr<Statement>& stp);
     
     protected:
         virtual bool getNextToken(Token& tok);

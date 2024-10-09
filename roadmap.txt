@@ -1,5 +1,6 @@
 Remove dead code (operator precedence etc)
 Parse square brackets
+Do not overuse shared_ptr (move unique ptrs to list?)
 Better error system
 Move headers to an include directory
 Add a few statements/expressions to make the next things possible/relevant

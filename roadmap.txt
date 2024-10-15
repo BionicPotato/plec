@@ -1,8 +1,8 @@
 Remove dead code (operator precedence etc)
-Parse square brackets
 Unit testing (CTest)
 Do not overuse shared_ptr (move unique ptrs to list?)
 Better error system
+Multi-threading etc
 Move headers to an include directory
 Add a few statements/expressions to make the next things possible/relevant
 Distinguish between Variable (the variable) and VariableExpr (expression that refers to a variable)
@@ -23,4 +23,4 @@ Separate configure and run:
         r.mem.at(123).set(456);
     }
 Do not put CodeGenerator and Interpreter in the core library; another library
-Multi-threading etc
+Do not process files that have not changed (just like any decent build system)

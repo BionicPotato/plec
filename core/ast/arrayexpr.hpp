@@ -5,12 +5,12 @@
 
 class Expression;
 
-class FunctionCallExpr: public Expression
+class ArrayExpr: public Expression
 {
     public:
-        std::shared_ptr<Expression> callee;
-        std::vector<std::shared_ptr<Expression>> args;
+        std::vector<std::shared_ptr<Expression>> expressions;
 
         using Expression::Expression;
         virtual void accept(ASTVisitor& visitor);
 };
+

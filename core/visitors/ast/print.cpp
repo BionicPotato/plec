@@ -1,11 +1,7 @@
+#include "../../ast/expressions.hpp"
 #include "../../ast/ast.hpp"
 #include "../../ast/statement.hpp"
 #include "../../ast/programstmt.hpp"
-#include "../../ast/expression.hpp"
-#include "../../ast/addexpr.hpp"
-#include "../../ast/blockexpr.hpp"
-#include "../../ast/variableassignexpr.hpp"
-#include "../../ast/functioncallexpr.hpp"
 #include "print.hpp"
 #include <iostream>
 #include <memory>
@@ -18,6 +14,20 @@ ASTPrintVisitor& ASTPrintVisitor::instance()
 {
     static ASTPrintVisitor visitor{};
     return visitor;
+}
+
+void ASTPrintVisitor::doAddExpr(AddExpr& ae)
+{
+    cout << string(indent, '\t') << "Addition: '" << ae.lhs->token.content << "' + '" << ae.rhs->token.content << '\'' << endl;
+}
+
+void ASTPrintVisitor::doArrayExpr(ArrayExpr& ae)
+{
+    cout << string(indent, '\t') << "Array: " << endl;
+    indent++;
+    for (shared_ptr<Expression> expr : ae.expressions)
+        expr->accept(*this);
+    indent--;
 }
 
 void ASTPrintVisitor::doAST(AST& ast)
@@ -36,34 +46,6 @@ void ASTPrintVisitor::doAST(AST& ast)
     }
 }
 
-void ASTPrintVisitor::doStatementList(StatementList& stmtlist)
-{
-    for (shared_ptr<Statement> stmt : stmtlist.statements) {
-        stmt->accept(*this);
-    }
-}
-
-void ASTPrintVisitor::doStatement(Statement& stmt)
-{
-    cout << string(indent, '\t') << "Statement: " << typeid(stmt).name() << endl;
-}
-
-void ASTPrintVisitor::doProgramStmt(ProgramStmt& stmt)
-{
-    cout << string(indent, '\t') << "Program statement: " << stmt.programName << endl;
-}
-
-void ASTPrintVisitor::doExpression(Expression& expr)
-{
-    // also: print expression's datatype
-    cout << string(indent, '\t') << "Expression: " << typeid(expr).name() << " '" << expr.token.content << '\'' << endl;
-}
-
-void ASTPrintVisitor::doAddExpr(AddExpr& ae)
-{
-    cout << string(indent, '\t') << "Addition: '" << ae.lhs->token.content << "' + '" << ae.rhs->token.content << '\'' << endl;
-}
-
 void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
 {
     cout << string(indent, '\t') << "Block:\n";
@@ -73,9 +55,10 @@ void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
     indent--;
 }
 
-void ASTPrintVisitor::doVariableAssignExpr(VariableAssignExpr& vae)
+void ASTPrintVisitor::doExpression(Expression& expr)
 {
-    cout << string(indent, '\t') << "Variable assignment: '" << vae.variable->token.content << "' with value '" << vae.value->token.content << '\'' << endl;
+    // also: print expression's datatype
+    cout << string(indent, '\t') << "Expression: " << typeid(expr).name() << " '" << expr.token.content << '\'' << endl;
 }
 
 void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
@@ -89,3 +72,26 @@ void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
         arg->accept(*this);
     indent--;
 }
+
+void ASTPrintVisitor::doProgramStmt(ProgramStmt& stmt)
+{
+    cout << string(indent, '\t') << "Program statement: " << stmt.programName << endl;
+}
+
+void ASTPrintVisitor::doStatement(Statement& stmt)
+{
+    cout << string(indent, '\t') << "Statement: " << typeid(stmt).name() << endl;
+}
+
+void ASTPrintVisitor::doStatementList(StatementList& stmtlist)
+{
+    for (shared_ptr<Statement> stmt : stmtlist.statements) {
+        stmt->accept(*this);
+    }
+}
+
+void ASTPrintVisitor::doVariableAssignExpr(VariableAssignExpr& vae)
+{
+    cout << string(indent, '\t') << "Variable assignment: '" << vae.variable->token.content << "' with value '" << vae.value->token.content << '\'' << endl;
+}
+

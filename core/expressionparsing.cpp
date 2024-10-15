@@ -4,28 +4,28 @@
 
 using namespace std;
 
-void parseVariables(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::iterator>& identifiers)
+void parseVariables(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
     while (!identifiers.empty()) {
-        if (!identifiers.top()->exprp)
-            identifiers.top()->exprp = make_shared<VariableExpr>(identifiers.top()->token);
-        identifiers.pop();
+        if (!identifiers.back()->exprp)
+            identifiers.back()->exprp = make_shared<VariableExpr>(identifiers.back()->token);
+        identifiers.pop_back();
     }
 }
 
-void parseStrings(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::iterator>& strings)
+void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& strings)
 {
     while (!strings.empty()) {
-        if (!strings.top()->exprp)
-            strings.top()->exprp = make_shared<StringExpr>(strings.top()->token);
-        strings.pop();
+        if (!strings.back()->exprp)
+            strings.back()->exprp = make_shared<StringExpr>(strings.back()->token);
+        strings.pop_back();
     }
 }
 
-void parseCalls(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::iterator>& calls)
+void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
 {
     while (!calls.empty()) {
-        list<ParsingExpression>::iterator i = calls.top();
+        list<ParsingExpression>::iterator i = calls.back();
         if (!i->exprp) {
             shared_ptr<FunctionCallExpr> fce = make_shared<FunctionCallExpr>(i->token);
             list<ParsingExpression>::iterator c = i, a = i;
@@ -43,14 +43,14 @@ void parseCalls(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::i
             i->exprp = fce;
             exprs.erase(c);
         }
-        calls.pop();
+        calls.pop_back();
     }
 }
 
-void parseAddSub(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::iterator>& addsub)
+void parseAddSub(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& addsub)
 {
     while (!addsub.empty()) {
-        list<ParsingExpression>::iterator i = addsub.top();
+        list<ParsingExpression>::iterator i = addsub.back();
         if (!i->exprp) {
             shared_ptr<AddExpr> addexprp = make_shared<AddExpr>(i->token);
             list<ParsingExpression>::iterator l = i, r = i;
@@ -65,7 +65,7 @@ void parseAddSub(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::
             exprs.erase(l);
             exprs.erase(r);
         }
-        addsub.pop();
+        addsub.pop_back();
     }
 }
 
@@ -82,10 +82,10 @@ void parseAddSub(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::
 //      5 + math.sqrt $ [25] = 5 + (math.sqrt $ [25])
 //      math.sqrt $ [25] + 5 = (math.sqrt $ [25]) + 5
 //TOK_COLON, TOK_CALL
-void parseVariableAssigns(list<ParsingExpression>& exprs, stack<list<ParsingExpression>::iterator>& colons)
+void parseVariableAssigns(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& colons)
 {
     while (!colons.empty()) {
-        list<ParsingExpression>::iterator i = colons.top();
+        list<ParsingExpression>::iterator i = colons.back();
         if (!i->exprp) {
             shared_ptr<VariableAssignExpr> varaexprp = make_shared<VariableAssignExpr>(i->token);
             list<ParsingExpression>::iterator var = i, val = i;
@@ -100,8 +100,48 @@ void parseVariableAssigns(list<ParsingExpression>& exprs, stack<list<ParsingExpr
             exprs.erase(var);
             exprs.erase(val);
         }
-        colons.pop();
+        colons.pop_back();
     }
 }
 
+void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& commas)
+{
+    if (!commas.empty())
+    {
+        list<ParsingExpression>::iterator i = commas.front();
+        list<ParsingExpression>::iterator lhs = prev(i);
+        list<ParsingExpression>::iterator rhs = next(i);
+
+        if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
+        if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
+
+        shared_ptr<ArrayExpr> arrayp = make_shared<ArrayExpr>(i->token);
+
+        arrayp->expressions.push_back(lhs->exprp);
+        arrayp->expressions.push_back(rhs->exprp);
+
+        exprs.erase(lhs);
+        exprs.erase(rhs);
+
+        i->exprp = arrayp;
+
+        commas.pop_front();
+
+        while (!commas.empty())
+        {
+            list<ParsingExpression>::iterator j = commas.front();
+            list<ParsingExpression>::iterator item = next(j);
+
+            if (!rhs->exprp) throw UnexpectedTokenException(item->token);
+
+            arrayp->expressions.push_back(item->exprp);
+
+            exprs.erase(item);
+            exprs.erase(j); // We're not giving j an exprp because the ParsingExpression representing this array is already in i
+                            // So now we have to erase it to not cause an error with uninitialized exprp
+
+            commas.pop_front();
+        }
+    }
+}
 

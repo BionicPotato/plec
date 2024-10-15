@@ -10,6 +10,7 @@
 #include <list>
 #include <stack>
 #include <memory>
+#include <typeinfo>
 
 using namespace std;
 
@@ -29,11 +30,12 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
     Token tok = start;
     list<ParsingExpression> exprs;
     
-    stack<list<ParsingExpression>::iterator> identifiers;
-    stack<list<ParsingExpression>::iterator> strings;
-    stack<list<ParsingExpression>::iterator> calls;
-    stack<list<ParsingExpression>::iterator> addsub;
-    stack<list<ParsingExpression>::iterator> colons;
+    list<list<ParsingExpression>::iterator> identifiers;
+    list<list<ParsingExpression>::iterator> strings;
+    list<list<ParsingExpression>::iterator> calls;
+    list<list<ParsingExpression>::iterator> addsub;
+    list<list<ParsingExpression>::iterator> colons;
+    list<list<ParsingExpression>::iterator> commas;
 
     for (; tok.id != end; getNextToken(tok))
     {
@@ -44,18 +46,26 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                 exprs.emplace_back(tok, blockp);
                 BlockStmtStream blockss(lexp);
                 shared_ptr<Statement> blockstp;
-                while (blockss.getNextStatement(blockstp)) {
+                while (blockss.getNextStatement(blockstp))
                     blockp->statements.push_back(blockstp);
-                }
             }
             break;
 
-            //TODO: add Square Bracket Expression and make function calls require it and not any
-            //other type of expression (also, ExpressionStream? i don't think it's needed)
             case TOK_OPENSQBR: {
-                shared_ptr<Expression> sqbrexprp;
-                sqbrexprp = getExpression(tok, TOK_CLOSESQBR);
-                exprs.emplace_back(sqbrexprp->token, sqbrexprp);
+                shared_ptr<Expression> exprp;
+                if (!getNextToken(tok)) throw UnexpectedTokenException(tok);
+                exprp = getExpression(tok, TOK_CLOSESQBR);
+                shared_ptr<ArrayExpr> arrayp;
+                const Expression* _e = exprp.get();
+                const type_info& t_e = typeid(*_e);
+                const type_info& t_ae = typeid(ArrayExpr);
+                if (t_e == t_ae) {
+                    arrayp = static_pointer_cast<ArrayExpr>(exprp);
+                } else {
+                    arrayp = make_shared<ArrayExpr>(tok);
+                    arrayp->expressions.push_back(exprp);
+                }
+                exprs.emplace_back(tok, arrayp);
             }
             break;
 
@@ -68,32 +78,40 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
             
             case TOK_IDENTIFIER:
                 exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
-                identifiers.push(prev(exprs.end()));
+                identifiers.push_back(prev(exprs.end()));
             break;
 
             case TOK_STRING:
                 exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
-                strings.push(prev(exprs.end()));
+                strings.push_back(prev(exprs.end()));
             break;
 
             case TOK_CALL:
                 exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
-                calls.push(prev(exprs.end()));
+                calls.push_back(prev(exprs.end()));
             break;
 
             case TOK_PLUS:
                 exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
-                addsub.push(prev(exprs.end()));
+                addsub.push_back(prev(exprs.end()));
             break;
             
             case TOK_COLON:
                 exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
-                colons.push(prev(exprs.end()));
+                colons.push_back(prev(exprs.end()));
+            break;
+
+            case TOK_COMMA:
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                commas.push_back(prev(exprs.end()));
+            break;
+
+            case TOK_UNKNOWN:
+                throw UnknownTokenException(tok);
             break;
 
             default:
-            case TOK_UNKNOWN:
-                throw UnknownTokenException(tok);
+                throw UnexpectedTokenException(tok);
             break;
         }
     }
@@ -103,6 +121,7 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
     parseCalls(exprs, calls);
     parseAddSub(exprs, addsub);
     parseVariableAssigns(exprs, colons);
+    parseCommas(exprs, commas);
 
     if (exprs.size() != 1) {
         stack<shared_ptr<Expression>> errorExprs;

@@ -8,6 +8,8 @@ endif()
 add_library(plec-core SHARED
     ast/addexpr.cpp
     ast/addexpr.hpp
+    ast/arrayexpr.cpp
+    ast/arrayexpr.hpp
     ast/ast.cpp
     ast/ast.hpp
     ast/astvisitable.hpp

@@ -1,7 +1,6 @@
 #include "token.hpp"
 #include "ast/expression.hpp"
 #include <list>
-#include <stack>
 #include <memory>
 
 struct ParsingExpression
@@ -13,9 +12,10 @@ struct ParsingExpression
         : token(token), exprp(exprp) {}
 };
 
-void parseVariables(std::list<ParsingExpression>& exprs, std::stack<std::list<ParsingExpression>::iterator>& identifiers);
-void parseStrings(std::list<ParsingExpression>& exprs, std::stack<std::list<ParsingExpression>::iterator>& strings);
-void parseCalls(std::list<ParsingExpression>& exprs, std::stack<std::list<ParsingExpression>::iterator>& calls);
-void parseAddSub(std::list<ParsingExpression>& exprs, std::stack<std::list<ParsingExpression>::iterator>& addsub);
-void parseVariableAssigns(std::list<ParsingExpression>& exprs, std::stack<std::list<ParsingExpression>::iterator>& colons);
+void parseVariables(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& identifiers);
+void parseStrings(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& strings);
+void parseCalls(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& calls);
+void parseAddSub(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& addsub);
+void parseVariableAssigns(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& colons);
+void parseCommas(std::list<ParsingExpression>& exprs, std::list<std::list<ParsingExpression>::iterator>& commas);
 

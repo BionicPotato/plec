@@ -1,4 +1,4 @@
-Start versions
+Move this list to issues
 Unit testing (CTest)
 Do not overuse shared_ptr (move unique ptrs to list?)
 Better error system

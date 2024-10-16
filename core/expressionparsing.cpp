@@ -22,6 +22,11 @@ void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::
     }
 }
 
+// The FunctionCallExpr's "args" will be a null-pointer if the function is called with no arguments
+// To check if a function has been called with no arguments, use:
+//      if (!functionCall.args)
+// and not:
+//      if (functionCall.args.expressions.empty())
 void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
 {
     while (!calls.empty()) {
@@ -33,10 +38,13 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
             if (!c->exprp) throw UnexpectedTokenException(c->token);
             shared_ptr<Expression> callee = c->exprp;
             //if there's nothing to the right, it's ok, just add no arguments to the function call
-            //TODO: when square bracket expression is added, loop through all its expressions and
-            //      add them all to the function call's args
             if (!(a == exprs.end() || !a->exprp)) {
-                fce->args.push_back(a->exprp);
+                const Expression* _a = a->exprp.get();
+                const type_info& t_a = typeid(*_a);
+                const type_info& t_ae = typeid(ArrayExpr);
+                if (t_a != t_ae)
+                    throw UnexpectedTokenException(a->token);
+                fce->args = static_pointer_cast<ArrayExpr>(a->exprp);
                 exprs.erase(a);
             }
             fce->callee = callee;

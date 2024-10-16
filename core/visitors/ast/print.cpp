@@ -18,12 +18,20 @@ ASTPrintVisitor& ASTPrintVisitor::instance()
 
 void ASTPrintVisitor::doAddExpr(AddExpr& ae)
 {
-    cout << string(indent, '\t') << "Addition: '" << ae.lhs->token.content << "' + '" << ae.rhs->token.content << '\'' << endl;
+    cout << string(indent, '\t')
+        << "Addition: '"
+        << ae.lhs->token.content
+        << "' + '"
+        << ae.rhs->token.content
+        << '\''
+        << endl;
 }
 
 void ASTPrintVisitor::doArrayExpr(ArrayExpr& ae)
 {
-    cout << string(indent, '\t') << "Array: " << endl;
+    cout << string(indent, '\t')
+        << "Array: "
+        << endl;
     indent++;
     for (shared_ptr<Expression> expr : ae.expressions)
         expr->accept(*this);
@@ -33,13 +41,21 @@ void ASTPrintVisitor::doArrayExpr(ArrayExpr& ae)
 void ASTPrintVisitor::doAST(AST& ast)
 {
     for (shared_ptr<File> file : ast.files) {
-        cout << string(indent, '\t') << "File: " << file->filename << endl;
+        cout << string(indent, '\t')
+            << "File: "
+            << file->filename
+            << endl;
         indent++;
         file->accept(*this);
         indent--;
     }
     for (shared_ptr<Target> target : ast.targets) {
-        cout << string(indent, '\t') << "Target: " << targetTypeNames[target->type] << ' ' << target->name << endl;
+        cout << string(indent, '\t')
+            << "Target: "
+            << targetTypeNames[target->type]
+            << ' '
+            << target->name
+            << endl;
         indent++;
         target->accept(*this);
         indent--;
@@ -48,7 +64,9 @@ void ASTPrintVisitor::doAST(AST& ast)
 
 void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
 {
-    cout << string(indent, '\t') << "Block:\n";
+    cout << string(indent, '\t')
+        << "Block:"
+        << endl;
     indent++;
     for (shared_ptr<Statement> stp : be.statements)
         stp->accept(*this);
@@ -58,18 +76,24 @@ void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
 void ASTPrintVisitor::doExpression(Expression& expr)
 {
     // also: print expression's datatype
-    cout << string(indent, '\t') << "Expression: " << typeid(expr).name() << " '" << expr.token.content << '\'' << endl;
+    cout << string(indent, '\t')
+        << "Expression: "
+        << typeid(expr).name()
+        << " '"
+        << expr.token.content
+        << '\''
+        << endl;
 }
 
 void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
 {
-    cout << string(indent, '\t') << "Function call: '" << fce.callee->token.content << (fce.args.empty() ? "' with no arguments" : ("' with arguments '" + fce.args[0]->token.content + '\''));
-    for (vector<shared_ptr<Expression>>::iterator arg = fce.args.begin() + 1; arg < fce.args.end(); arg++)
-        cout << "', " << (*arg)->token.content << '\'';
-    cout << endl;
+    cout << string(indent, '\t')
+        << "Function call: '"
+        << fce.callee->token.content
+        << (!fce.args ? "' with no arguments" : ("' with " + to_string(fce.args->expressions.size()) + " arguments:"))
+        << endl;
     indent++;
-    for (shared_ptr<Expression> arg : fce.args)
-        arg->accept(*this);
+    if (fce.args) fce.args->accept(*this);
     indent--;
 }
 

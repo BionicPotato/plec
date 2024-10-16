@@ -1,4 +1,4 @@
-Remove dead code (operator precedence etc)
+Start versions
 Unit testing (CTest)
 Do not overuse shared_ptr (move unique ptrs to list?)
 Better error system

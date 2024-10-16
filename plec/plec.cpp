@@ -1,3 +1,4 @@
+#include "../version.h"
 #include "../core/lexer.hpp"
 #include "../core/exceptions.hpp"
 #include "../core/tokenid.hpp"
@@ -18,6 +19,11 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+    if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+        cout << VERSION << endl;
+        return 0;
+    }
+
     int exitCode = EXIT_SUCCESS;
     cout.sync_with_stdio(false);
 

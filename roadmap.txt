@@ -1,4 +1,6 @@
 Move this list to issues
+Don't use null pointer to represent empty argument list, go back to a vector of expressions
+Reduce the use of null pointer to represent meaningful information
 Unit testing (CTest)
 Do not overuse shared_ptr (move unique ptrs to list?)
 Better error system

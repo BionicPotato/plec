@@ -7,7 +7,7 @@
 class VariableAssignExpr: public OperatorExpression
 {
     public:
-        std::shared_ptr<VariableExpr> variable; // TODO: replace with Variable
+        std::shared_ptr<VariableExpr> variable;
         std::shared_ptr<Expression> value;
 
         using OperatorExpression::OperatorExpression;

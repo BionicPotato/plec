@@ -124,8 +124,8 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
     parseCommas(exprs, commas);
 
     if (exprs.size() != 1) {
-        shared_ptr<stack<shared_ptr<Expression>>> errorExprs = make_shared<stack<shared_ptr<Expression>>>();
-        for (ParsingExpression p : exprs) errorExprs->push(p.exprp);
+        stack<shared_ptr<Expression>> errorExprs;
+        for (ParsingExpression p : exprs) errorExprs.push(p.exprp);
         throw AmbiguousStatementException(errorExprs);
     }
 

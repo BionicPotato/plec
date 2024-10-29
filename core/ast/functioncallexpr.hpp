@@ -1,6 +1,6 @@
 #pragma once
 
-#include "expressions.hpp"
+#include "expression.hpp"
 #include <vector>
 
 class Expression;
@@ -9,7 +9,7 @@ class FunctionCallExpr: public Expression
 {
     public:
         std::shared_ptr<Expression> callee;
-        std::shared_ptr<ArrayExpr> args;
+        std::vector<std::shared_ptr<Expression>> args;
 
         using Expression::Expression;
         virtual void accept(ASTVisitor& visitor);

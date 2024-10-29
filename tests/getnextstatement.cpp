@@ -1,33 +1,12 @@
+#include "test.hpp"
 #include "../core/ast/expressions.hpp"
 #include "../core/ast/statement.hpp"
 #include "../core/ast/programstmt.hpp"
 #include "../core/stmtstreams/file.hpp"
 #include "../core/lexer.hpp"
-#include <iostream>
 #include <memory>
-#include <typeinfo>
-
-#define astType(stp, t) (_astType((stp), (typeid(t))))
-#define require(cond, errorMessage) if (!_require((cond), (errorMessage))) return exitCode
 
 using namespace std;
-
-int exitCode = EXIT_SUCCESS;
-
-bool _astType(shared_ptr<Statement> stp, const type_info& t)
-{
-    Statement* _s = stp.get();
-    return typeid(*_s) == t;
-}
-
-bool _require(bool cond, string errorMessage)
-{
-    if (!cond) {
-        exitCode = EXIT_FAILURE;
-        cerr << errorMessage;
-    }
-    return cond;
-}
 
 int main()
 {
@@ -269,6 +248,6 @@ int main()
         !filess.getNextStatement(stp),
         "More than five statements have been read");
 
-    return exitCode;
+    return EXIT_SUCCESS;
 }
 

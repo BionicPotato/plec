@@ -3,11 +3,11 @@ project(plec-test)
 
 enable_testing()
 
-add_executable(basic basic.cpp)
+add_executable(basic basic.cpp test.cpp)
 target_link_libraries(basic optimized plec-core debug plec-core.db)
 add_test(NAME basic COMMAND $<TARGET_FILE:basic>)
 
-add_executable(getnextstatement getnextstatement.cpp)
+add_executable(getnextstatement getnextstatement.cpp test.cpp)
 target_link_libraries(getnextstatement optimized plec-core debug plec-core.db)
 # Copy getnextstatement.ple to binary dir
 add_custom_command(

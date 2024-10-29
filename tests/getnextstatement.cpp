@@ -42,7 +42,7 @@ int main()
         fcep->callee->token.content == "func",
         "Second statement's Callee is not 'func'");
     require(
-        fcep->args.get() == nullptr,
+        fcep->args.size() == 0,
         "Second statement has arguments");
 
     require(
@@ -62,12 +62,9 @@ int main()
         fcep->callee->token.content == "func2",
         "Third statement's Callee is not 'func2'");
     require(
-        fcep->args.get() != nullptr,
-        "Third statement has no arguments");
-    require(
-        fcep->args->expressions.size() == 1,
-        "Third statement has more than one argument");
-    shared_ptr<Expression> arg0 = fcep->args->expressions[0];
+        fcep->args.size() == 1,
+        "Third statement does not have one argument");
+    shared_ptr<Expression> arg0 = fcep->args[0];
     require(
         arg0.get() != nullptr,
         "Third statement's argument is null");
@@ -95,12 +92,9 @@ int main()
         fcep->callee->token.content == "func3",
         "Fourth statement's Callee is not 'func3'");
     require(
-        fcep->args.get() != nullptr,
-        "Fourth statement has no arguments");
-    require(
-        fcep->args->expressions.size() == 3,
+        fcep->args.size() == 3,
         "Fourth statement does not have 3 arguments");
-    arg0 = fcep->args->expressions[0];
+    arg0 = fcep->args[0];
     require(
         astType(arg0, VariableExpr),
         "Fourth statement's first argument is not VariableExpr");
@@ -108,10 +102,10 @@ int main()
         arg0->token.content == "wfwe",
         "Fourth statement's first argument is not 'wfwe'");
     require(
-        astType(fcep->args->expressions[1], AddExpr),
+        astType(fcep->args[1], AddExpr),
         "Fourth statement's second argument is not AddExpr");
     shared_ptr<AddExpr> arg1 =
-        static_pointer_cast<AddExpr>(fcep->args->expressions[1]);
+        static_pointer_cast<AddExpr>(fcep->args[1]);
     require(
         arg1->lhs.get() != nullptr,
         "Fourth statement's second argument does not have a left-hand side");
@@ -131,10 +125,10 @@ int main()
         arg1->rhs->token.content == "bar",
         "Fourth statement's second argument RHS is not 'bar'");
     require(
-        astType(fcep->args->expressions[2], FunctionCallExpr),
+        astType(fcep->args[2], FunctionCallExpr),
         "Fourth statement's third argument is not FunctionCallExpr");
     shared_ptr<FunctionCallExpr> arg2 =
-        static_pointer_cast<FunctionCallExpr>(fcep->args->expressions[2]);
+        static_pointer_cast<FunctionCallExpr>(fcep->args[2]);
     require(
         arg2->callee.get() != nullptr,
         "Fourth statement's third argument does not have a Callee");
@@ -142,7 +136,7 @@ int main()
         astType(arg2->callee, VariableExpr),
         "Fourth statement's third argument's Callee is not VariableExpr");
     require(
-        arg2->args == nullptr,
+        arg2->args.size() == 0,
         "Fourth statement's third argument has arguments");
     require(
         arg2->callee->token.content == "baz",
@@ -215,7 +209,7 @@ int main()
         fcep->callee->token.content == "aaa",
         "Block's second statement's Calle is not 'aaa'");
     require(
-        fcep->args == nullptr,
+        fcep->args.size() == 0,
         "Block's second statement has arguments");
     
     require(
@@ -232,16 +226,13 @@ int main()
         fcep->callee->token.content == "bbb",
         "Block's third statement's Callee is not 'bbb'");
     require(
-        fcep->args != nullptr,
-        "Block's third statement has no arguments");
+        fcep->args.size() == 1,
+        "Block's third statement does not have 1 argument");
     require(
-        fcep->args->expressions.size() == 1,
-        "Block's third statement has more than 1 argument");
-    require(
-        astType(fcep->args->expressions[0], VariableExpr),
+        astType(fcep->args[0], VariableExpr),
         "Block's third statement's argument is not VariableExpr");
     require(
-        fcep->args->expressions[0]->token.content == "aaa",
+        fcep->args[0]->token.content == "aaa",
         "Block's third statement's argument is not 'aaa'");
 
     require(

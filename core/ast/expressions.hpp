@@ -1,3 +1,5 @@
+#pragma once
+
 #include "addexpr.hpp"
 #include "arrayexpr.hpp"
 #include "blockexpr.hpp"

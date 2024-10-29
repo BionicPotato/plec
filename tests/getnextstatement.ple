@@ -1,0 +1,13 @@
+// Simple statements delimited by semicolons
+program test;
+func $;
+func2 $ ["aaa"];
+func3 $ [wfwe, foo + bar, baz $];
+
+// Statement containing curly brackets
+_wr_func4 : {
+    "aaa" + "bbb";
+    aaa $;
+    bbb $ [aaa];
+};
+

@@ -13,6 +13,9 @@ struct noop
     void operator()(...) const {}
 };
 
+bool isalnumund(char c) {return isalnum(c) || c == '_';}
+bool isalund(char c) {return isalpha(c) || c == '_';}
+
 shared_ptr<istream> getInput(const char* filename)
 {
     shared_ptr<istream> in;
@@ -90,9 +93,9 @@ bool Lexer::getNextToken(Token& tok)
         }
         readString += readChar; // last '"'
     }
-    else if (isalnum(readChar) || readChar == '_')
+    else if (isalnumund(readChar))
     {
-        for (getNextChar(); isalnum(readChar) || readChar == '_'; getNextChar()) {
+        for (getNextChar(); isalnumund(readChar); getNextChar()) {
             readString += readChar;
         }
         ungetChar();
@@ -135,10 +138,10 @@ TokenID Lexer::getTokenID(const string& tokstr)
     {
         map<string, TokenID>::iterator it = multiCharTokens.find(tokstr);
         if (it != multiCharTokens.end()) return it->second;
-        else if (isalpha(tokstr[0])) return TOK_IDENTIFIER;
+        else if (isalund(tokstr[0])) return TOK_IDENTIFIER;
         else return TOK_UNKNOWN;
     }
-    else if (isalpha(tokstr[0])) return TOK_IDENTIFIER;
+    else if (isalund(tokstr[0])) return TOK_IDENTIFIER;
     else switch (tokstr[0])
     {
         case ':': return TOK_COLON;

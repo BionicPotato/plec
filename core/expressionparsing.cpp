@@ -1,6 +1,7 @@
 #include "exceptions.hpp"
 #include "expressionparsing.hpp"
 #include "ast/expressions.hpp"
+#include <typeinfo>
 
 using namespace std;
 
@@ -33,10 +34,15 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
             if (!c->exprp) throw UnexpectedTokenException(c->token);
             shared_ptr<Expression> callee = c->exprp;
             //if there's nothing to the right, it's ok, just add no arguments to the function call
-            //TODO: when square bracket expression is added, loop through all its expressions and
-            //      add them all to the function call's args
             if (!(a == exprs.end() || !a->exprp)) {
-                fce->args.push_back(a->exprp);
+                const Expression* _a = a->exprp.get();
+                const type_info& t_a = typeid(*_a);
+                const type_info& t_ae = typeid(ArrayExpr);
+                if (t_a != t_ae) throw UnexpectedTokenException(a->token);
+                shared_ptr<ArrayExpr> aep = static_pointer_cast<ArrayExpr>(a->exprp);
+                for (shared_ptr<Expression> arg : aep->expressions) {
+                    fce->args.push_back(arg);
+                }
                 exprs.erase(a);
             }
             fce->callee = callee;

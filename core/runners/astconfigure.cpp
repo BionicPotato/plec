@@ -1,18 +1,29 @@
 #include "astconfigure.hpp"
+#include "../exceptions.hpp"
 #include "../ast/ast.hpp"
 #include "../ast/program.hpp"
 
 using namespace std;
 
-ASTConfigureRunner::ASTConfigureRunner(AST& ast, shared_ptr<File> filep): ast(ast), filep(filep) {}
+ASTConfigureRunner::ASTConfigureRunner(AST& ast): ast(ast){}
 
 void ASTConfigureRunner::addToTarget(shared_ptr<Statement> stp)
 {
     targetp->statements.push_back(stp);
 }
 
-void ASTConfigureRunner::setTarget(TargetType targetType, string targetName)
+void ASTConfigureRunner::setTarget(string filename, TargetType targetType, string targetName)
 {
+    shared_ptr<File> filep;
+
+    for (shared_ptr<File> fp : ast.files) {
+        if (fp->filename == filename) {
+            filep = fp;
+            break;
+        }
+    }
+    if (!filep) throw UnknownFilenameException(filename);
+
     for (shared_ptr<Target> tp : ast.targets)
     {
         if (tp->name == targetName) {

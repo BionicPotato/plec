@@ -46,6 +46,8 @@ add_library(plec-core SHARED
     exceptions/badcall.hpp
     exceptions/unexpectedtoken.cpp
     exceptions/unexpectedtoken.hpp
+    exceptions/unknownfilename.cpp
+    exceptions/unknownfilename.hpp
     exceptions/unknowntoken.cpp
     exceptions/unknowntoken.hpp
     runners/astconfigure.cpp

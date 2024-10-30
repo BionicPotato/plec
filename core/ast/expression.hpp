@@ -6,8 +6,6 @@
 class Expression: public Statement
 {
     public:
-        Token token;
-
-        Expression(Token& token);
+        using Statement::Statement;
         virtual void accept(ASTVisitor& visitor);
 };

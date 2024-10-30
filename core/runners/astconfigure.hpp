@@ -10,11 +10,9 @@ class File;
 class ASTConfigureRunner: public Runner
 {
     public:
-        std::shared_ptr<File> filep;
-        
-        ASTConfigureRunner(AST& ast, std::shared_ptr<File> filep);
+        ASTConfigureRunner(AST& ast);
         virtual void addToTarget(std::shared_ptr<Statement> stp);
-        virtual void setTarget(TargetType targetType, std::string targetName);
+        virtual void setTarget(std::string filename, TargetType targetType, std::string targetName);
     
     private:
         AST& ast;

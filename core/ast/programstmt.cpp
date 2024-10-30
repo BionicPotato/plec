@@ -5,12 +5,12 @@
 
 using namespace std;
 
-ProgramStmt::ProgramStmt(string programName)
-: programName(programName) {}
+ProgramStmt::ProgramStmt(Token& token, string programName)
+: Statement(token), programName(programName) {}
 
 void ProgramStmt::run(Runner& r)
 {
-    r.setTarget(TARG_PROGRAM, programName);
+    r.setTarget(token.filename, TARG_PROGRAM, programName);
 }
 
 void ProgramStmt::accept(ASTVisitor& visitor)

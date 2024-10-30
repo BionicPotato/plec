@@ -6,7 +6,7 @@
 using namespace std;
 
 AST::AST(vector<const char*> args)
-: configureRunner(ASTConfigureRunner(*this, nullptr))
+: configureRunner(ASTConfigureRunner(*this))
 {
     for (const char* filename : args) {
         files.push_back(make_shared<File>(filename));
@@ -35,7 +35,6 @@ void AST::configure()
     for (shared_ptr<File> filep : files)
     {
         for (shared_ptr<Statement> stp : filep->statements) {
-            configureRunner.filep = filep;
             stp->run(configureRunner);
         }
     }

@@ -1,16 +1,12 @@
 #pragma once
 
 #include "expression.hpp"
-#include "operatorexpression.hpp"
+#include "binopexpression.hpp"
 #include <memory>
 
-class AddExpr: public OperatorExpression
+class AddExpr: public BinOpExpression
 {
     public:
-        std::shared_ptr<Expression> lhs;
-        std::shared_ptr<Expression> rhs;
-
-        using OperatorExpression::OperatorExpression;
+        using BinOpExpression::BinOpExpression;
         virtual void accept(ASTVisitor& visitor);
-        virtual void assignOperands(std::shared_ptr<Expression> a, std::shared_ptr<Expression> b);
 };

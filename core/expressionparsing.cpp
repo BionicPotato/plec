@@ -55,54 +55,41 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
 
 void parseAddSub(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& addsub)
 {
-    while (!addsub.empty()) {
+    while (!addsub.empty())
+    {
         list<ParsingExpression>::iterator i = addsub.back();
-        if (!i->exprp) {
-            shared_ptr<AddExpr> addexprp = make_shared<AddExpr>(i->token);
-            list<ParsingExpression>::iterator l = i, r = i;
-            l--;
-            if (!l->exprp) throw UnexpectedTokenException(l->token);
-            shared_ptr<Expression> lhs = l->exprp;
-            r++;
-            if (!r->exprp) throw UnexpectedTokenException(r->token);
-            shared_ptr<Expression> rhs = r->exprp;
-            addexprp->assignOperands(lhs, rhs);
-            i->exprp = addexprp;
-            exprs.erase(l);
-            exprs.erase(r);
+
+        if (!i->exprp)
+        {
+            list<ParsingExpression>::iterator lhs = prev(i), rhs = next(i);
+
+            if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
+            if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
+
+            i->exprp = make_shared<AddExpr>(i->token, lhs->exprp, rhs->exprp);
+
+            exprs.erase(lhs);
+            exprs.erase(rhs);
         }
         addsub.pop_back();
     }
 }
 
-// problem: a + b $ c will parse as (a + b) $ c instead of the intended a + (b $ c)
-// however, a $ b + c should parse as a $ (b + c) and not (a $ b) + c
-// x : y $ z parse as (x) : (y $ z) (set x to the return value of y)
-// x $ y : z pase as (x) $ (y : z) (set y to z, and pass y as a parameter to x)
-// unsolvable paradox with current syntax!
-//
-// redo syntax:
-// function calls always take arguments in square brackets: stdout.put $ ["Hello world!"];
-// function calls with no arguments stay the same: sayHello $;
-// function calls are parsed first, before additions:
-//      5 + math.sqrt $ [25] = 5 + (math.sqrt $ [25])
-//      math.sqrt $ [25] + 5 = (math.sqrt $ [25]) + 5
-//TOK_COLON, TOK_CALL
 void parseVariableAssigns(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& colons)
 {
-    while (!colons.empty()) {
+    while (!colons.empty())
+    {
         list<ParsingExpression>::iterator i = colons.back();
-        if (!i->exprp) {
-            shared_ptr<VariableAssignExpr> varaexprp = make_shared<VariableAssignExpr>(i->token);
-            list<ParsingExpression>::iterator var = i, val = i;
-            var--;
+
+        if (!i->exprp)
+        {
+            list<ParsingExpression>::iterator var = prev(i), val = next(i);
+
             if (!var->exprp) throw UnexpectedTokenException(var->token);
-            shared_ptr<Expression> varp = var->exprp;
-            val++;
             if (!val->exprp) throw UnexpectedTokenException(val->token);
-            shared_ptr<Expression> valp = val->exprp;
-            varaexprp->assignOperands(varp, valp);
-            i->exprp = varaexprp;
+
+            i->exprp = make_shared<VariableAssignExpr>(i->token, var->exprp, val->exprp);
+
             exprs.erase(var);
             exprs.erase(val);
         }

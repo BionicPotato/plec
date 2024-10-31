@@ -1,17 +1,13 @@
 #pragma once
 
 #include "expression.hpp"
-#include "operatorexpression.hpp"
+#include "binopexpression.hpp"
 #include "variableexpr.hpp"
 
-class VariableAssignExpr: public OperatorExpression
+class VariableAssignExpr: public BinOpExpression
 {
     public:
-        std::shared_ptr<VariableExpr> variable;
-        std::shared_ptr<Expression> value;
-
-        using OperatorExpression::OperatorExpression;
+        using BinOpExpression::BinOpExpression;
         virtual void accept(ASTVisitor& visitor);
-        virtual void assignOperands(std::shared_ptr<Expression> a, std::shared_ptr<Expression> b);
 };
 

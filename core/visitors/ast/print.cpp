@@ -130,9 +130,9 @@ void ASTPrintVisitor::doVariableAssignExpr(VariableAssignExpr& vae)
 {
     cout << string(indent, '\t')
          << "Variable assignment: '"
-         << vae.variable->token.content
+         << vae.lhs->token.content
          << "' with value '"
-         << vae.value->token.content
+         << vae.rhs->token.content
          << '\''
          << endl;
 }

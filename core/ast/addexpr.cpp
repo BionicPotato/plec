@@ -8,8 +8,3 @@ void AddExpr::accept(ASTVisitor& visitor)
     visitor.doAddExpr(*this);
 }
 
-void AddExpr::assignOperands(shared_ptr<Expression> a, shared_ptr<Expression> b)
-{
-    lhs = a;
-    rhs = b;
-}

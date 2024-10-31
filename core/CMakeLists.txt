@@ -13,6 +13,8 @@ add_library(plec-core SHARED
     ast/ast.cpp
     ast/ast.hpp
     ast/astvisitable.hpp
+    ast/binopexpression.cpp
+    ast/binopexpression.hpp
     ast/blockexpr.cpp
     ast/blockexpr.hpp
     ast/expression.cpp
@@ -21,7 +23,6 @@ add_library(plec-core SHARED
     ast/file.hpp
     ast/functioncallexpr.cpp
     ast/functioncallexpr.hpp
-    ast/operatorexpression.hpp
     ast/program.cpp
     ast/program.hpp
     ast/programstmt.cpp
@@ -40,8 +41,6 @@ add_library(plec-core SHARED
     ast/variableexpr.hpp
     exceptions/ambiguousstatement.cpp
     exceptions/ambiguousstatement.hpp
-    exceptions/badassign.cpp
-    exceptions/badassign.hpp
     exceptions/badcall.cpp
     exceptions/badcall.hpp
     exceptions/unexpectedtoken.cpp

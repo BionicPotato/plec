@@ -151,22 +151,22 @@ int main()
     shared_ptr<VariableAssignExpr> vaep =
         static_pointer_cast<VariableAssignExpr>(stp);
     require(
-        vaep->variable != nullptr,
+        vaep->lhs != nullptr,
         "Fifth statement does not have a Variable");
     require(
-        vaep->value != nullptr,
+        vaep->rhs != nullptr,
         "Fifth statement does not have a Value");
     require(
-        astType(vaep->variable, VariableExpr),
+        astType(vaep->lhs, VariableExpr),
         "Fifth statement's Variable is not VariableExpr");
     require(
-        vaep->variable->token.content == "_wr_func4",
+        vaep->lhs->token.content == "_wr_func4",
         "Fifth statement's Variable is not '_wr_func4");
     require(
-        astType(vaep->value, BlockExpr),
+        astType(vaep->rhs, BlockExpr),
         "Fifth statement's Value is not BlockExpr");
     const shared_ptr<BlockExpr> blockp =
-        static_pointer_cast<BlockExpr>(vaep->value);
+        static_pointer_cast<BlockExpr>(vaep->rhs);
     
     require(
         blockp->statements.size() == 3,

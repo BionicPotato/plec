@@ -25,29 +25,34 @@ void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::
 
 void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
 {
-    while (!calls.empty()) {
+    while (!calls.empty())
+    {
         list<ParsingExpression>::iterator i = calls.back();
-        if (!i->exprp) {
-            shared_ptr<FunctionCallExpr> fce = make_shared<FunctionCallExpr>(i->token);
-            list<ParsingExpression>::iterator c = i, a = i;
-            c--; a++;
-            if (!c->exprp) throw UnexpectedTokenException(c->token);
-            shared_ptr<Expression> callee = c->exprp;
+
+        if (!i->exprp)
+        {
+            list<ParsingExpression>::iterator callee = prev(i), args = next(i);
+
+            if (!callee->exprp) throw UnexpectedTokenException(callee->token);
+
+            shared_ptr<FunctionCallExpr> fcep = make_shared<FunctionCallExpr>(i->token, callee->exprp);
+            
             //if there's nothing to the right, it's ok, just add no arguments to the function call
-            if (!(a == exprs.end() || !a->exprp)) {
-                const Expression* _a = a->exprp.get();
+            if (!(args == exprs.end() || !args->exprp)) {
+                const Expression* _a = args->exprp.get();
                 const type_info& t_a = typeid(*_a);
                 const type_info& t_ae = typeid(ArrayExpr);
-                if (t_a != t_ae) throw UnexpectedTokenException(a->token);
-                shared_ptr<ArrayExpr> aep = static_pointer_cast<ArrayExpr>(a->exprp);
+                if (t_a != t_ae) throw UnexpectedTokenException(args->token);
+                shared_ptr<ArrayExpr> aep = static_pointer_cast<ArrayExpr>(args->exprp);
                 for (shared_ptr<Expression> arg : aep->expressions) {
-                    fce->args.push_back(arg);
+                    fcep->args.push_back(arg);
                 }
-                exprs.erase(a);
+                exprs.erase(args);
             }
-            fce->callee = callee;
-            i->exprp = fce;
-            exprs.erase(c);
+
+            i->exprp = fcep;
+
+            exprs.erase(callee);
         }
         calls.pop_back();
     }

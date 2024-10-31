@@ -11,6 +11,6 @@ class FunctionCallExpr: public Expression
         std::shared_ptr<Expression> callee;
         std::vector<std::shared_ptr<Expression>> args;
 
-        using Expression::Expression;
+        FunctionCallExpr(Token& token, std::shared_ptr<Expression> callee);
         virtual void accept(ASTVisitor& visitor);
 };

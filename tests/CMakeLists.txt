@@ -18,3 +18,7 @@ add_custom_command(
 )
 add_test(NAME getnextstatement COMMAND $<TARGET_FILE:getnextstatement>)
 
+add_executable(parsedecl parsedecl.cpp test.cpp)
+target_link_libraries(parsedecl optimized plec-core debug plec-core.db)
+add_test(NAME parsedecl COMMAND $<TARGET_FILE:parsedecl>)
+

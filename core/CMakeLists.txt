@@ -17,6 +17,8 @@ add_library(plec-core SHARED
     ast/binopexpression.hpp
     ast/blockexpr.cpp
     ast/blockexpr.hpp
+    ast/declexpr.cpp
+    ast/declexpr.hpp
     ast/expression.cpp
     ast/expression.hpp
     ast/file.cpp
@@ -58,6 +60,8 @@ add_library(plec-core SHARED
     visitors/ast/print.cpp
     visitors/ast/print.hpp
     visitors/astvisitor.hpp
+    asttype.cpp
+    asttype.hpp
     exceptions.cpp
     exceptions.hpp
     expressionparsing.cpp

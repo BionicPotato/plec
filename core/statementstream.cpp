@@ -116,8 +116,10 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
         }
     }
 
+    list<list<ParsingExpression>::iterator> varIdentifiers = identifiers;
     parseVariables(exprs, identifiers);
     parseStrings(exprs, strings);
+    parseDecl(exprs, identifiers);
     parseCalls(exprs, calls);
     parseAddSub(exprs, addsub);
     parseVariableAssigns(exprs, colons);

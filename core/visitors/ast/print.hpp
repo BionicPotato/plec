@@ -12,6 +12,7 @@ class ASTPrintVisitor: public ASTVisitor
         virtual void doArrayExpr(ArrayExpr& ae);
         virtual void doAST(AST& ast);
         virtual void doBlockExpr(BlockExpr& be);
+        virtual void doDeclExpr(DeclExpr& de);
         virtual void doExpression(Expression& expr);
         virtual void doFunctionCallExpr(FunctionCallExpr& fce);
         virtual void doProgramStmt(ProgramStmt& stmt);

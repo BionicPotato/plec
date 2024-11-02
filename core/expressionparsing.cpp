@@ -1,9 +1,13 @@
+#include "asttype.hpp"
 #include "exceptions.hpp"
 #include "expressionparsing.hpp"
 #include "ast/expressions.hpp"
 #include <typeinfo>
 
 using namespace std;
+
+ParsingExpression::ParsingExpression(Token token, shared_ptr<Expression> exprp)
+: token(token), exprp(exprp) {}
 
 void parseVariables(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
@@ -20,6 +24,25 @@ void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::
         if (!strings.back()->exprp)
             strings.back()->exprp = make_shared<StringExpr>(strings.back()->token);
         strings.pop_back();
+    }
+}
+
+void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
+{
+    while (!identifiers.empty())
+    {
+        list<ParsingExpression>::iterator i = identifiers.back();
+        if (!i->exprp) throw UnexpectedTokenException(i->token);
+
+        list<ParsingExpression>::iterator type = prev(i);
+
+        if (astType(type->exprp, VariableExpr)) {
+            shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(i->token, type->exprp, i->exprp);
+            i->exprp = dep;
+
+            exprs.erase(type);
+        }
+        identifiers.pop_back();
     }
 }
 

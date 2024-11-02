@@ -1,4 +1,5 @@
 #include "test.hpp"
+#include "../core/asttype.hpp"
 #include "../core/ast/expressions.hpp"
 #include "../core/ast/statement.hpp"
 #include "../core/ast/programstmt.hpp"

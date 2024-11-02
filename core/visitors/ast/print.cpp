@@ -73,6 +73,17 @@ void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
     indent--;
 }
 
+void ASTPrintVisitor::doDeclExpr(DeclExpr& de)
+{
+    cout << string(indent, '\t')
+         << "Declaration of variable '"
+         << de.rhs->token.content
+         << "' with type '"
+         << de.lhs->token.content
+         << '\''
+         << endl;
+}
+
 void ASTPrintVisitor::doExpression(Expression& expr)
 {
     // also: print expression's datatype

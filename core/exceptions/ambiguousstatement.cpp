@@ -14,3 +14,4 @@ const char* AmbiguousStatementException::what() const noexcept
     }
     return errorMessage;
 }
+

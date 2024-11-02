@@ -5,3 +5,4 @@ void BlockExpr::accept(ASTVisitor& visitor)
 {
     visitor.doBlockExpr(*this);
 }
+

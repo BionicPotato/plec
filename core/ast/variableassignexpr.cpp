@@ -25,3 +25,4 @@ void VariableAssignExpr::assignOperands(shared_ptr<Expression> a, shared_ptr<Exp
     variable = static_pointer_cast<VariableExpr>(a);
     value = b;
 }
+

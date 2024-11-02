@@ -17,3 +17,4 @@ void ProgramStmt::accept(ASTVisitor& visitor)
 {
     visitor.doProgramStmt(*this);
 }
+

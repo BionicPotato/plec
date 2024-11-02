@@ -10,3 +10,4 @@ const char* BadAssignException::what() const noexcept
     snprintf(errorMessage, sizeof(errorMessage), "%s:%u:%u Cannot assign a value to %s '%s'; expected %s", expr->token.filename, expr->token.lineNo, expr->token.colNo, givenType.c_str(), expr->token.content.c_str(), expectedType.c_str());
     return errorMessage;
 }
+

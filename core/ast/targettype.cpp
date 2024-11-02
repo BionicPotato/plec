@@ -7,3 +7,4 @@ string targetTypeNames[2] =
     "program",
     "lib",
 };
+

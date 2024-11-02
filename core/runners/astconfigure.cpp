@@ -4,7 +4,7 @@
 
 using namespace std;
 
-ASTConfigureRunner::ASTConfigureRunner(AST& ast, shared_ptr<File> filep): ast(ast), filep(filep) {}
+ASTConfigureRunner::ASTConfigureRunner(AST& ast, shared_ptr<File> filep): filep(filep), ast(ast) {}
 
 void ASTConfigureRunner::addToTarget(shared_ptr<Statement> stp)
 {
@@ -34,3 +34,4 @@ void ASTConfigureRunner::setTarget(TargetType targetType, string targetName)
         break;
     }
 }
+

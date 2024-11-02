@@ -25,3 +25,4 @@ bool FileStmtStream::checkProgramStmt(Token& tok, shared_ptr<Statement>& stp)
     }
     return false;
 }
+

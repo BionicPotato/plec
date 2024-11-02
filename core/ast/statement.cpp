@@ -11,3 +11,4 @@ void Statement::run(Runner& r)
 {
     r.addToTarget(shared_from_this());
 }
+

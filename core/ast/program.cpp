@@ -5,3 +5,4 @@ using namespace std;
 
 Program::Program(const string& name)
 : Target(name, TARG_PROGRAM) {}
+

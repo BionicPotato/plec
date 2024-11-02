@@ -7,3 +7,4 @@ void Expression::accept(ASTVisitor& visitor)
 {
     visitor.doExpression(*this);
 }
+

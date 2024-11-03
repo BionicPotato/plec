@@ -25,11 +25,5 @@ bool FileStmtStream::checkProgramStmt(Token& tok, shared_ptr<Statement>& stp)
         return true;
     }
     return false;
-<<<<<<< HEAD
-}
-||||||| 256efec
-}
-=======
 }
 
->>>>>>> master

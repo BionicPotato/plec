@@ -13,11 +13,5 @@ const char* AmbiguousStatementException::what() const noexcept
         }
     }
     return errorMessage;
-<<<<<<< HEAD
-}
-||||||| 256efec
-}
-=======
 }
 
->>>>>>> master

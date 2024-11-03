@@ -10,3 +10,4 @@ const char* BadCallException::what() const noexcept
     snprintf(errorMessage, sizeof(errorMessage), "%s:%u:%u Cannot call %s '%s'; must be a function", expr->token.filename, expr->token.lineNo, expr->token.colNo, givenType.c_str(), expr->token.content.c_str());
     return errorMessage;
 }
+

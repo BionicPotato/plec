@@ -14,7 +14,7 @@
 
 using namespace std;
 
-StatementStream::StatementStream(shared_ptr<Lexer> lexp): lexp(lexp), filename(lexp->filename) {}
+StatementStream::StatementStream(shared_ptr<Lexer> lexp): filename(lexp->filename), lexp(lexp) {}
 
 bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
 {

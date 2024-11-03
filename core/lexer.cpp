@@ -25,8 +25,8 @@ shared_ptr<istream> getInput(const char* filename)
 }
 
 Lexer::Lexer(const char* file_name):
-    input(getInput(file_name)),
     filename((file_name[0] == '\0') ? "stdin" : file_name),
+    input(getInput(file_name)),
     lineNo(1),
     colNo(0)
     {}

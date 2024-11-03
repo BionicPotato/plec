@@ -45,3 +45,4 @@ void ASTConfigureRunner::setTarget(string filename, TargetType targetType, strin
         break;
     }
 }
+

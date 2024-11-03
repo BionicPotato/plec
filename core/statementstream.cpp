@@ -14,7 +14,7 @@
 
 using namespace std;
 
-StatementStream::StatementStream(shared_ptr<Lexer> lexp): lexp(lexp), filename(lexp->filename) {}
+StatementStream::StatementStream(shared_ptr<Lexer> lexp): filename(lexp->filename), lexp(lexp) {}
 
 bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
 {
@@ -126,8 +126,8 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
     parseCommas(exprs, commas);
 
     if (exprs.size() != 1) {
-        stack<shared_ptr<Expression>> errorExprs;
-        for (ParsingExpression p : exprs) errorExprs.push(p.exprp);
+        shared_ptr<stack<shared_ptr<Expression>>> errorExprs;
+        for (ParsingExpression p : exprs) errorExprs->push(p.exprp);
         throw AmbiguousStatementException(errorExprs);
     }
 

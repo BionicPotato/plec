@@ -3,6 +3,8 @@
 #include "../astvisitor.hpp"
 #include <cstdint>
 
+class BinOpExpression;
+
 class ASTPrintVisitor: public ASTVisitor
 {
     public:
@@ -26,5 +28,7 @@ class ASTPrintVisitor: public ASTVisitor
         ASTPrintVisitor();
         ASTPrintVisitor(const ASTPrintVisitor&);
         ASTPrintVisitor& operator= (const ASTPrintVisitor&);
+
+        void printBinOp(BinOpExpression& boe);
 };
 

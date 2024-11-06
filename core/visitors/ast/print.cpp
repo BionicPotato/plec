@@ -16,15 +16,29 @@ ASTPrintVisitor& ASTPrintVisitor::instance()
     return visitor;
 }
 
+void ASTPrintVisitor::printBinOp(BinOpExpression& boe)
+{
+    indent++;
+    cout << string(indent, '\t')
+         << "LHS:"
+         << endl;
+    indent++;
+    boe.lhs->accept(*this);
+    indent--;
+    cout << string(indent, '\t')
+         << "RHS:"
+         << endl;
+    indent++;
+    boe.rhs->accept(*this);
+    indent -= 2;
+}
+
 void ASTPrintVisitor::doAddExpr(AddExpr& ae)
 {
     cout << string(indent, '\t')
          << "Addition: '"
-         << ae.lhs->token.content
-         << "' + '"
-         << ae.rhs->token.content
-         << '\''
          << endl;
+    printBinOp(ae);
 }
 
 void ASTPrintVisitor::doArrayExpr(ArrayExpr& ae)
@@ -76,12 +90,21 @@ void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
 void ASTPrintVisitor::doDeclExpr(DeclExpr& de)
 {
     cout << string(indent, '\t')
-         << "Declaration of variable '"
-         << de.rhs->token.content
-         << "' with type '"
-         << de.lhs->token.content
-         << '\''
+         << "Variable declaration:"
          << endl;
+    indent++;
+    cout << string(indent, '\t')
+         << "Type:"
+         << endl;
+    indent++;
+    de.lhs->accept(*this);
+    indent--;
+    cout << string(indent, '\t')
+         << "Variable:"
+         << endl;
+    indent++;
+    de.rhs->accept(*this);
+    indent -= 2;
 }
 
 void ASTPrintVisitor::doExpression(Expression& expr)
@@ -102,7 +125,10 @@ void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
          << "Function call: '"
          << fce.callee->token.content;
     size_t argssize = fce.args.size();
-    if (argssize == 0) cout << "' with no arguments";
+    if (argssize == 0) {
+        cout << "' with no arguments" << endl;
+        return;
+    }
     else if (argssize == 1) cout << "' with 1 argument";
     else cout << "' with "
               << argssize
@@ -140,11 +166,8 @@ void ASTPrintVisitor::doStatementList(StatementList& stmtlist)
 void ASTPrintVisitor::doVariableAssignExpr(VariableAssignExpr& vae)
 {
     cout << string(indent, '\t')
-         << "Variable assignment: '"
-         << vae.lhs->token.content
-         << "' with value '"
-         << vae.rhs->token.content
-         << '\''
+         << "Variable assignment:"
          << endl;
+    printBinOp(vae);
 }
 

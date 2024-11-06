@@ -22,3 +22,14 @@ add_executable(parsedecl parsedecl.cpp test.cpp)
 target_link_libraries(parsedecl optimized plec-core debug plec-core.db)
 add_test(NAME parsedecl COMMAND $<TARGET_FILE:parsedecl>)
 
+add_executable(regress-23 regress-23.cpp test.cpp)
+target_link_libraries(regress-23 optimized plec-core debug plec-core.db)
+# Copy regress-23.ple to binary dir
+add_custom_command(
+    TARGET regress-23 POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/regress-23.ple
+            ${CMAKE_CURRENT_BINARY_DIR}/regress-23.ple
+)
+add_test(NAME regress-23 COMMAND $<TARGET_FILE:regress-23>)
+

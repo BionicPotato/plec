@@ -170,40 +170,5 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
         for (auto j : toErase)
             exprs.erase(j);
     }
-    /*bool firstLoop = true;
-    shared_ptr<ArrayExpr> arrayp;
-    for (auto i : commas)
-    {
-        if (firstLoop)
-        {
-            firstLoop = false;
-
-            arrayp = make_shared<ArrayExpr>(i->token);
-            i->exprp = arrayp;
-
-            list<ParsingExpression>::iterator lhs = prev(i);
-            list<ParsingExpression>::iterator rhs = next(i);
-
-            if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
-            if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
-
-            arrayp->expressions.push_back(lhs->exprp);
-            arrayp->expressions.push_back(rhs->exprp);
-
-            exprs.erase(lhs);
-            exprs.erase(rhs);
-        }
-        else
-        {
-            list<ParsingExpression>::iterator item = next(i);
-
-            if (item == exprs.end()) throw UnexpectedTokenException(i->token);
-            if (!item->exprp) throw UnexpectedTokenException(item->token);
-
-            arrayp->expressions.push_back(item->exprp);
-
-            exprs.erase(item);
-            exprs.erase(i);        }
-    }*/
 }
 

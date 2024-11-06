@@ -21,20 +21,47 @@ ParsingExpression::~ParsingExpression()
         itlist->erase(it);
 }
 
+template<class T>
+void p_parseAtoms(list<list<ParsingExpression>::iterator>& itlist)
+{
+    for (auto i : itlist) {
+        if (!i->exprp)
+            i->exprp = make_shared<T>(i->token);
+    }
+}
+
+template<class T>
+void p_parseBinOp(list<ParsingExpression>& exprs, list<ParsingExpression>::iterator i)
+{
+    if (!i->exprp)
+    {
+        auto lhs = prev(i), rhs = next(i);
+
+        if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
+        if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
+
+        i->exprp = make_shared<T>(i->token, lhs->exprp, rhs->exprp);
+
+        exprs.erase(lhs);
+        exprs.erase(rhs);
+    }
+}
+
+template<class T>
+void p_parseBinOps(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& itlist)
+{
+    for (auto i : itlist)
+        p_parseBinOp<T>(exprs, i);
+}
+
 void parseVariables(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
-    for (auto i : identifiers) {
-        if (!i->exprp)
-            i->exprp = make_shared<VariableExpr>(i->token);
-    }
+    p_parseAtoms<VariableExpr>(identifiers);
 }
 
 void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& strings)
 {
-    for (auto i : strings) {
-        if (!i->exprp)
-            i->exprp = make_shared<StringExpr>(i->token);
-    }
+    p_parseAtoms<StringExpr>(strings);
 }
 
 void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
@@ -44,7 +71,7 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
     {
         list<ParsingExpression>::iterator var = next(type);
         if (var == exprs.end()) break; // If it's the last ParsingExpression we can quit now because it can't be a declaration
-                                        // also, dereferencing var would be an error
+                                       // also, dereferencing var would be an error
         if (!var->exprp) continue;
         if (!astType(var->exprp, VariableExpr)) continue;
 
@@ -97,38 +124,23 @@ void parseAddSub(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 {
     for (auto i : addsub)
     {
-        if (!i->exprp)
+        switch(i->token.id)
         {
-            list<ParsingExpression>::iterator lhs = prev(i), rhs = next(i);
-
-            if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
-            if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
-
-            i->exprp = make_shared<AddExpr>(i->token, lhs->exprp, rhs->exprp);
-
-            exprs.erase(lhs);
-            exprs.erase(rhs);
+            case TOK_PLUS:
+                p_parseBinOp<AddExpr>(exprs, i);
+            break;
+            
+            case TOK_MINUS:
+            default:
+                throw UnexpectedTokenException(i->token);
+            break;
         }
     }
 }
 
 void parseVariableAssigns(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& colons)
 {
-    for (auto i : colons)
-    {
-        if (!i->exprp)
-        {
-            list<ParsingExpression>::iterator var = prev(i), val = next(i);
-
-            if (!var->exprp) throw UnexpectedTokenException(var->token);
-            if (!val->exprp) throw UnexpectedTokenException(val->token);
-
-            i->exprp = make_shared<VariableAssignExpr>(i->token, var->exprp, val->exprp);
-
-            exprs.erase(var);
-            exprs.erase(val);
-        }
-    }
+    p_parseBinOps<VariableAssignExpr>(exprs, colons);
 }
 
 void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& commas)

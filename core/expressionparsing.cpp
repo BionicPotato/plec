@@ -43,7 +43,7 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
     for (auto type : identifiers)
     {
         list<ParsingExpression>::iterator var = next(type);
-        if (var == exprs.end()) return; // If it's the last ParsingExpression we can quit now because it can't be a declaration
+        if (var == exprs.end()) break; // If it's the last ParsingExpression we can quit now because it can't be a declaration
                                         // also, dereferencing var would be an error
         if (!var->exprp) continue;
         if (!astType(var->exprp, VariableExpr)) continue;

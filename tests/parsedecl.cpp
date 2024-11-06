@@ -8,19 +8,34 @@ using namespace std;
 
 int main()
 {
-    list<ParsingExpression> exprs;
-    exprs.push_back({{TOK_IDENTIFIER, "Str", "parsedecl.ple", 1, 1}, nullptr});
-    exprs.push_back({{TOK_IDENTIFIER, "message", "parsedecl.ple", 1, 5}, nullptr});
-    exprs.push_back({{TOK_COLON, ":", "parsedecl.ple", 1, 7}, nullptr});
-    exprs.push_back({{TOK_STRING, "\"Hello, world!\"", "parsedecl.ple", 1, 9}, nullptr});
-    exprs.push_back({{TOK_COMMA, ",", "parsedecl.ple", 1, 17}, nullptr});
-    exprs.push_back({{TOK_IDENTIFIER, "Int", "parsedecl.ple", 2, 1}, nullptr});
-    exprs.push_back({{TOK_IDENTIFIER, "x", "parsedecl.ple", 2, 5}, nullptr});
-    list<list<ParsingExpression>::iterator> identifiers =
-    {exprs.begin(), next(exprs.begin()), prev(prev(exprs.end())), prev(exprs.end())};
+    Token tokStr = {TOK_IDENTIFIER, "Str", "parsedecl.ple", 1, 1};
+    Token tokMessage = {TOK_IDENTIFIER, "message", "parsedecl.ple", 1, 5};
+    Token tokColon = {TOK_COLON, ":", "parsedecl.ple", 1, 7};
+    Token tokHello = {TOK_STRING, "\"Hello, world!\"", "parsedecl.ple", 1, 9};
+    Token tokComma = {TOK_COMMA, ",", "parsedecl.ple", 1, 17};
+    Token tokInt = {TOK_IDENTIFIER, "Int", "parsedecl.ple", 2, 1};
+    Token tokX = {TOK_IDENTIFIER, "x", "parsedecl.ple", 2, 5};
 
-    auto varIdentifiers = identifiers;
-    parseVariables(exprs, varIdentifiers);
+    list<list<ParsingExpression>::iterator> identifiers; 
+    list<ParsingExpression> exprs;
+    exprs.emplace_back(tokStr, nullptr, &identifiers);
+    exprs.back().it = identifiers.end();
+    exprs.emplace_back(tokMessage, nullptr, &identifiers);
+    exprs.back().it = identifiers.end();
+    exprs.emplace_back(tokColon, nullptr, nullptr);
+    exprs.emplace_back(tokHello, nullptr, nullptr);
+    exprs.emplace_back(tokComma, nullptr, nullptr);
+    exprs.emplace_back(tokInt, nullptr, &identifiers);
+    exprs.back().it = identifiers.end();
+    exprs.emplace_back(tokX, nullptr, &identifiers);
+    exprs.back().it = identifiers.end();
+    identifiers = {exprs.begin(), next(exprs.begin()), prev(prev(exprs.end())), prev(exprs.end())};
+    exprs.front().it = identifiers.begin();
+    next(exprs.begin())->it = next(identifiers.begin());
+    prev(prev(exprs.end()))->it = prev(prev(identifiers.end()));
+    exprs.back().it = prev(identifiers.end());
+
+    parseVariables(exprs, identifiers);
     parseDecl(exprs, identifiers);
 
     require(

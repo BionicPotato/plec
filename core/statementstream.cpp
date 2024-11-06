@@ -43,7 +43,7 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
         {
             case TOK_OPENCURLYBR: {
                 shared_ptr<BlockExpr> blockp = make_shared<BlockExpr>(tok);
-                exprs.emplace_back(tok, blockp);
+                exprs.emplace_back(tok, blockp, nullptr);
                 BlockStmtStream blockss(lexp);
                 shared_ptr<Statement> blockstp;
                 while (blockss.getNextStatement(blockstp))
@@ -65,45 +65,51 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     arrayp = make_shared<ArrayExpr>(tok);
                     arrayp->expressions.push_back(exprp);
                 }
-                exprs.emplace_back(tok, arrayp);
+                exprs.emplace_back(tok, arrayp, nullptr);
             }
             break;
 
             case TOK_OPENPAREN: {
                 shared_ptr<Expression> parenexprp;
                 parenexprp = getExpression(tok, TOK_CLOSEPAREN);
-                exprs.emplace_back(parenexprp->token, parenexprp);
+                exprs.emplace_back(parenexprp->token, parenexprp, nullptr);
             }
             break;
             
             case TOK_IDENTIFIER:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &identifiers);
                 identifiers.push_back(prev(exprs.end()));
+                exprs.back().it = prev(identifiers.end());
             break;
 
             case TOK_STRING:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &strings);
                 strings.push_back(prev(exprs.end()));
+                exprs.back().it = prev(strings.end());
             break;
 
             case TOK_CALL:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &calls);
                 calls.push_back(prev(exprs.end()));
+                exprs.back().it = prev(calls.end());
             break;
 
             case TOK_PLUS:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &addsub);
                 addsub.push_back(prev(exprs.end()));
+                exprs.back().it = prev(addsub.end());
             break;
             
             case TOK_COLON:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &colons);
                 colons.push_back(prev(exprs.end()));
+                exprs.back().it = prev(colons.end());
             break;
 
             case TOK_COMMA:
-                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr));
+                exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &commas);
                 commas.push_back(prev(exprs.end()));
+                exprs.back().it = prev(commas.end());
             break;
 
             case TOK_UNKNOWN:
@@ -116,7 +122,6 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
         }
     }
 
-    list<list<ParsingExpression>::iterator> varIdentifiers = identifiers;
     parseVariables(exprs, identifiers);
     parseStrings(exprs, strings);
     parseDecl(exprs, identifiers);
@@ -131,6 +136,9 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
         throw AmbiguousStatementException(errorExprs);
     }
 
-    return exprs.front().exprp;
+    shared_ptr<Expression> retval = exprs.front().exprp;
+    exprs.clear(); // Avoids calling ParsingExpression's destructor with an invalid iterator
+    return retval;
+    // return exprs.front().exprp;
 }
 

@@ -1,0 +1,8 @@
+program decl;
+
+Type Example:
+[
+    Bool ex0,
+    String s : "Hello, world!"
+];
+

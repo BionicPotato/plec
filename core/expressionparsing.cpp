@@ -2,56 +2,69 @@
 #include "exceptions.hpp"
 #include "expressionparsing.hpp"
 #include "ast/expressions.hpp"
+#include <forward_list>
 #include <typeinfo>
 
 using namespace std;
 
-ParsingExpression::ParsingExpression(Token token, shared_ptr<Expression> exprp)
-: token(token), exprp(exprp) {}
+ParsingExpression::ParsingExpression
+(
+        Token token,
+        shared_ptr<Expression> exprp,
+        list<list<ParsingExpression>::iterator>* itlist
+)
+: token(token), exprp(exprp), itlist(itlist) {}
+
+ParsingExpression::~ParsingExpression()
+{
+    if (itlist != nullptr)
+        itlist->erase(it);
+}
 
 void parseVariables(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
-    while (!identifiers.empty()) {
-        if (!identifiers.back()->exprp)
-            identifiers.back()->exprp = make_shared<VariableExpr>(identifiers.back()->token);
-        identifiers.pop_back();
+    for (auto i : identifiers) {
+        if (!i->exprp)
+            i->exprp = make_shared<VariableExpr>(i->token);
     }
 }
 
 void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& strings)
 {
-    while (!strings.empty()) {
-        if (!strings.back()->exprp)
-            strings.back()->exprp = make_shared<StringExpr>(strings.back()->token);
-        strings.pop_back();
+    for (auto i : strings) {
+        if (!i->exprp)
+            i->exprp = make_shared<StringExpr>(i->token);
     }
 }
 
 void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
-    while (!identifiers.empty())
+    forward_list<list<ParsingExpression>::iterator> toErase;
+    for (auto type : identifiers)
     {
-        list<ParsingExpression>::iterator i = identifiers.back();
-        if (!i->exprp) throw UnexpectedTokenException(i->token);
+        list<ParsingExpression>::iterator var = next(type);
+        if (var == exprs.end()) return; // If it's the last ParsingExpression we can quit now because it can't be a declaration
+                                        // also, dereferencing var would be an error
+        if (!var->exprp) continue;
+        if (!astType(var->exprp, VariableExpr)) continue;
 
-        list<ParsingExpression>::iterator type = prev(i);
+        if (!type->exprp) throw UnexpectedTokenException(type->token);
 
         if (astType(type->exprp, VariableExpr)) {
-            shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(i->token, type->exprp, i->exprp);
-            i->exprp = dep;
+            shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(var->token, type->exprp, var->exprp);
+            var->exprp = dep;
 
-            exprs.erase(type);
+            toErase.push_front(type);
         }
-        identifiers.pop_back();
     }
+    for (auto j : toErase)
+        exprs.erase(j);
 }
 
 void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
 {
-    while (!calls.empty())
+    for (auto i : calls)
     {
-        list<ParsingExpression>::iterator i = calls.back();
-
         if (!i->exprp)
         {
             list<ParsingExpression>::iterator callee = prev(i), args = next(i);
@@ -77,16 +90,13 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
 
             exprs.erase(callee);
         }
-        calls.pop_back();
     }
 }
 
 void parseAddSub(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& addsub)
 {
-    while (!addsub.empty())
+    for (auto i : addsub)
     {
-        list<ParsingExpression>::iterator i = addsub.back();
-
         if (!i->exprp)
         {
             list<ParsingExpression>::iterator lhs = prev(i), rhs = next(i);
@@ -99,16 +109,13 @@ void parseAddSub(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
             exprs.erase(lhs);
             exprs.erase(rhs);
         }
-        addsub.pop_back();
     }
 }
 
 void parseVariableAssigns(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& colons)
 {
-    while (!colons.empty())
+    for (auto i : colons)
     {
-        list<ParsingExpression>::iterator i = colons.back();
-
         if (!i->exprp)
         {
             list<ParsingExpression>::iterator var = prev(i), val = next(i);
@@ -121,7 +128,6 @@ void parseVariableAssigns(list<ParsingExpression>& exprs, list<list<ParsingExpre
             exprs.erase(var);
             exprs.erase(val);
         }
-        colons.pop_back();
     }
 }
 
@@ -146,23 +152,58 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 
         i->exprp = arrayp;
 
-        commas.pop_front();
-
-        while (!commas.empty())
+        forward_list<list<ParsingExpression>::iterator> toErase;
+        for (auto j = next(commas.begin()); j != commas.end(); ++j)
         {
-            list<ParsingExpression>::iterator j = commas.front();
-            list<ParsingExpression>::iterator item = next(j);
+            i = *j;
+            list<ParsingExpression>::iterator item = next(i);
 
-            if (!rhs->exprp) throw UnexpectedTokenException(item->token);
+            if (!item->exprp) throw UnexpectedTokenException(item->token);
 
             arrayp->expressions.push_back(item->exprp);
 
             exprs.erase(item);
-            exprs.erase(j); // We're not giving j an exprp because the ParsingExpression representing this array is already in i
-                            // So now we have to erase it to not cause an error with uninitialized exprp
-
-            commas.pop_front();
+            toErase.push_front(i);
         }
+        // All commas are a single expression, so we don't give exprp to other commas
+        // So now we have to erase them to not cause an error with uninitialized exprp
+        for (auto j : toErase)
+            exprs.erase(j);
     }
+    /*bool firstLoop = true;
+    shared_ptr<ArrayExpr> arrayp;
+    for (auto i : commas)
+    {
+        if (firstLoop)
+        {
+            firstLoop = false;
+
+            arrayp = make_shared<ArrayExpr>(i->token);
+            i->exprp = arrayp;
+
+            list<ParsingExpression>::iterator lhs = prev(i);
+            list<ParsingExpression>::iterator rhs = next(i);
+
+            if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
+            if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
+
+            arrayp->expressions.push_back(lhs->exprp);
+            arrayp->expressions.push_back(rhs->exprp);
+
+            exprs.erase(lhs);
+            exprs.erase(rhs);
+        }
+        else
+        {
+            list<ParsingExpression>::iterator item = next(i);
+
+            if (item == exprs.end()) throw UnexpectedTokenException(i->token);
+            if (!item->exprp) throw UnexpectedTokenException(item->token);
+
+            arrayp->expressions.push_back(item->exprp);
+
+            exprs.erase(item);
+            exprs.erase(i);        }
+    }*/
 }
 

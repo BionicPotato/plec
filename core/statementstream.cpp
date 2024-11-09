@@ -20,6 +20,7 @@ bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
 {
     Token tok;
     if (!getNextToken(tok)) return false;
+    if (checkCurlyBr(tok)) return false;
     if (checkProgramStmt(tok, stp)) return true;
     else stp = getExpression(tok, TOK_SEMICOLON);
     return true;

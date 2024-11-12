@@ -6,6 +6,10 @@
 
 using namespace std;
 
+void ctl(void (*f)(list<ParsingExpression>&, list<list<ParsingExpression>::iterator>&), list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& itlist);
+void parseVariables(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers);
+void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers);
+
 int main()
 {
     Token tokStr = {TOK_IDENTIFIER, "Str", "parsedecl.ple", 1, 1};
@@ -35,8 +39,8 @@ int main()
     prev(prev(exprs.end()))->it = prev(prev(identifiers.end()));
     exprs.back().it = prev(identifiers.end());
 
-    parseVariables(exprs, identifiers);
-    parseDecl(exprs, identifiers);
+    ctl(&parseVariables, exprs, identifiers);
+    ctl(&parseDecl, exprs, identifiers);
 
     require(
         exprs.size() == 5,

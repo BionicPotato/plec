@@ -125,13 +125,17 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
             }
         }
 
-        parseVariables(exprs, identifiers);
-        parseStrings(exprs, strings);
-        parseDecl(exprs, identifiers);
-        parseCalls(exprs, calls);
-        parseAddSub(exprs, addsub);
-        parseVariableAssigns(exprs, colons);
-        parseCommas(exprs, commas);
+        exprParse
+        (
+            exprs,
+
+            identifiers,
+            strings,
+            calls,
+            addsub,
+            colons,
+            commas
+        );
 
         if (exprs.size() != 1) {
             shared_ptr<stack<shared_ptr<Expression>>> errorExprs;

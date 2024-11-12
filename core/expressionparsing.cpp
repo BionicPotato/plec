@@ -7,6 +7,8 @@
 
 using namespace std;
 
+forward_list<pair<list<list<ParsingExpression>::iterator>::iterator, list<list<ParsingExpression>::iterator>*>> toErase;
+
 ParsingExpression::ParsingExpression
 (
         Token token,
@@ -15,10 +17,29 @@ ParsingExpression::ParsingExpression
 )
 : token(token), exprp(exprp), itlist(itlist) {}
 
-ParsingExpression::~ParsingExpression()
+void eraseExpr(list<ParsingExpression>& exprs, list<ParsingExpression>::iterator it)
 {
-    if (itlist != nullptr)
-        itlist->erase(it);
+    if (it->itlist != nullptr)
+        toErase.emplace_front(it->it, it->itlist);
+    exprs.erase(it);
+}
+
+void erasePending()
+{
+    for (auto i : toErase)
+        i.second->erase(i.first);
+    toErase.clear();
+}
+
+void ctl(void (*f)(list<ParsingExpression>&, list<list<ParsingExpression>::iterator>&), list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& itlist)
+{
+    try {
+        f(exprs, itlist);
+        erasePending();
+    } catch (exception& e) {
+        erasePending();
+        throw;
+    }
 }
 
 template<class T>
@@ -42,8 +63,8 @@ void p_parseBinOp(list<ParsingExpression>& exprs, list<ParsingExpression>::itera
 
         i->exprp = make_shared<T>(i->token, lhs->exprp, rhs->exprp);
 
-        exprs.erase(lhs);
-        exprs.erase(rhs);
+        eraseExpr(exprs, lhs);
+        eraseExpr(exprs, rhs);
     }
 }
 
@@ -66,7 +87,7 @@ void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::
 
 void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
-    forward_list<list<ParsingExpression>::iterator> toErase;
+    forward_list<list<ParsingExpression>::iterator> erasable;
     for (auto type : identifiers)
     {
         list<ParsingExpression>::iterator var = next(type);
@@ -81,11 +102,11 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
             shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(var->token, type->exprp, var->exprp);
             var->exprp = dep;
 
-            toErase.push_front(type);
+            erasable.push_front(type);
         }
     }
-    for (auto j : toErase)
-        exprs.erase(j);
+    for (auto j : erasable)
+        eraseExpr(exprs, j);
 }
 
 void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
@@ -110,12 +131,12 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
                 for (shared_ptr<Expression> arg : aep->expressions) {
                     fcep->args.push_back(arg);
                 }
-                exprs.erase(args);
+                eraseExpr(exprs, args);
             }
 
             i->exprp = fcep;
 
-            exprs.erase(callee);
+            eraseExpr(exprs, callee);
         }
     }
 }
@@ -159,12 +180,12 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
         arrayp->expressions.push_back(lhs->exprp);
         arrayp->expressions.push_back(rhs->exprp);
 
-        exprs.erase(lhs);
-        exprs.erase(rhs);
+        eraseExpr(exprs, lhs);
+        eraseExpr(exprs, rhs);
 
         i->exprp = arrayp;
 
-        forward_list<list<ParsingExpression>::iterator> toErase;
+        forward_list<list<ParsingExpression>::iterator> erasable;
         for (auto j = next(commas.begin()); j != commas.end(); ++j)
         {
             i = *j;
@@ -174,13 +195,34 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 
             arrayp->expressions.push_back(item->exprp);
 
-            exprs.erase(item);
-            toErase.push_front(i);
+            eraseExpr(exprs, item);
+            erasable.push_front(i);
         }
         // All commas are a single expression, so we don't give exprp to other commas
         // So now we have to erase them to not cause an error with uninitialized exprp
-        for (auto j : toErase)
-            exprs.erase(j);
+        for (auto j : erasable)
+            eraseExpr(exprs, j);
     }
+}
+
+void exprParse
+(
+    list<ParsingExpression>& exprs,
+
+    list<list<ParsingExpression>::iterator>& identifiers,
+    list<list<ParsingExpression>::iterator>& strings,
+    list<list<ParsingExpression>::iterator>& calls,
+    list<list<ParsingExpression>::iterator>& addsub,
+    list<list<ParsingExpression>::iterator>& colons,
+    list<list<ParsingExpression>::iterator>& commas
+)
+{
+        ctl(&parseVariables, exprs, identifiers);
+        ctl(&parseStrings, exprs, strings);
+        ctl(&parseDecl, exprs, identifiers);
+        ctl(&parseCalls, exprs, calls);
+        ctl(&parseAddSub, exprs, addsub);
+        ctl(&parseVariableAssigns, exprs, colons);
+        ctl(&parseCommas, exprs, commas);
 }
 

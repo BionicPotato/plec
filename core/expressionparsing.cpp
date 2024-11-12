@@ -87,7 +87,6 @@ void parseStrings(list<ParsingExpression>& exprs, list<list<ParsingExpression>::
 
 void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& identifiers)
 {
-    forward_list<list<ParsingExpression>::iterator> erasable;
     for (auto type : identifiers)
     {
         list<ParsingExpression>::iterator var = next(type);
@@ -102,11 +101,9 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
             shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(var->token, type->exprp, var->exprp);
             var->exprp = dep;
 
-            erasable.push_front(type);
+            eraseExpr(exprs, type);
         }
     }
-    for (auto j : erasable)
-        eraseExpr(exprs, j);
 }
 
 void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& calls)
@@ -185,7 +182,6 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 
         i->exprp = arrayp;
 
-        forward_list<list<ParsingExpression>::iterator> erasable;
         for (auto j = next(commas.begin()); j != commas.end(); ++j)
         {
             i = *j;
@@ -196,12 +192,12 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
             arrayp->expressions.push_back(item->exprp);
 
             eraseExpr(exprs, item);
-            erasable.push_front(i);
+
+            // All commas are a single expression, so we don't give exprp to other commas
+            // So now we have to erase them to not cause an error with uninitialized exprp
+            eraseExpr(exprs, i);
         }
-        // All commas are a single expression, so we don't give exprp to other commas
-        // So now we have to erase them to not cause an error with uninitialized exprp
-        for (auto j : erasable)
-            eraseExpr(exprs, j);
+        
     }
 }
 

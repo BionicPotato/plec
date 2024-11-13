@@ -4,6 +4,13 @@ func $;
 func2 $ ["aaa"];
 func3 $ [wfwe, foo + bar, baz $];
 
+// Variable declarations
+[
+    Bool flag : false,
+    Str message : "This is a message",
+    Int count : DEFAULT_COUNT
+];
+
 // Statement containing curly brackets
 _wr_func4 : {
     "aaa" + "bbb";

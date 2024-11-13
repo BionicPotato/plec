@@ -147,25 +147,164 @@ int main()
         filess.getNextStatement(stp),
         "Cannot get fifth statement");
     require(
-        astType(stp, VariableAssignExpr),
-        "Fifth statement is not VariableAssignExpr");
+        astType(stp, ArrayExpr),
+        "Fifth statement is not ArrayExpr");
+    shared_ptr<ArrayExpr> arep =
+        static_pointer_cast<ArrayExpr>(stp);
+    require(
+        arep->expressions.size() == 3,
+        "Fifth statement does not have 3 elements");
+
+    require(
+        arep->expressions[0] != nullptr,
+        "Fifth statement does not have a first element");
+    require(
+        astType(arep->expressions[0], VariableAssignExpr),
+        "Fifth statement's first element is not VariableAssignExpr");
     shared_ptr<VariableAssignExpr> vaep =
-        static_pointer_cast<VariableAssignExpr>(stp);
+        static_pointer_cast<VariableAssignExpr>(arep->expressions[0]);
     require(
         vaep->lhs != nullptr,
-        "Fifth statement does not have a Variable");
+        "Fifth statement's first element does not have a Variable");
     require(
         vaep->rhs != nullptr,
-        "Fifth statement does not have a Value");
+        "Fifth statement's first element does not have a Value");
+    require(
+        astType(vaep->lhs, DeclExpr),
+        "Fifth statement's first element LHS is not DeclExpr");
+    shared_ptr<DeclExpr> dep =
+        static_pointer_cast<DeclExpr>(vaep->lhs);
+    require(
+        dep->lhs != nullptr,
+        "Fifth statement's first element LHS does not have a Type");
+    require(
+        dep->rhs != nullptr,
+        "Fifth statement's first element LHS does not have a Variable");
+    require(
+        astType(dep->lhs, VariableExpr),
+        "Fifth statement's first element LHS Type is not VariableExpr");
+    require(
+        dep->lhs->token.content == "Bool",
+        "Fifth statement's first element LHS Type is not 'Bool'");
+    require(
+        astType(dep->rhs, VariableExpr),
+        "Fifth statement's first element LHS Variable is not VariableExpr");
+    require(
+        dep->rhs->token.content == "flag",
+        "Fifth statement's first element LHS Variable is not 'flag'");
+    require(
+        astType(vaep->rhs, VariableExpr),
+        "Fifth statement's first element RHS is not VariableExpr");
+    require(
+        vaep->rhs->token.content == "false",
+        "Fifth statement's first element RHS is not 'false'");
+
+    require(
+        arep->expressions[1] != nullptr,
+        "Fifth statement does not have a second element");
+    require(
+        astType(arep->expressions[1], VariableAssignExpr),
+        "Fifth statement's second element is not VariableAssignExpr");
+    vaep = static_pointer_cast<VariableAssignExpr>(arep->expressions[1]);
+    require(
+        vaep->lhs != nullptr,
+        "Fifth statement's second element does not have a Variable");
+    require(
+        astType(vaep->lhs, DeclExpr),
+        "Fifth statement's second element LHS is not DeclExpr");
+    dep = static_pointer_cast<DeclExpr>(vaep->lhs);
+    require(
+        dep->lhs != nullptr,
+        "Fifth statement's second element LHS does not have a Type");
+    require(
+        astType(dep->lhs, VariableExpr),
+        "Fifth statement's second element LHS Type is not VariableExpr");
+    require(
+        dep->lhs->token.content == "Str",
+        "Fifth statement's second element LHS Type is not 'Str'");
+    require(
+        dep->rhs != nullptr,
+        "Fifth statement's second element LHS does not have a Variable");
+    require(
+        astType(dep->rhs, VariableExpr),
+        "Fifth statement's second element LHS Variable is not VariableExpr");
+    require(
+        dep->rhs->token.content == "message",
+        "Fifth statement's second element LHS Variable is not 'message'");
+    require(
+        vaep->rhs != nullptr,
+        "Fifth statement's second element does not have a Value");
+    require(
+        astType(vaep->rhs, StringExpr),
+        "Fifth statement's second element RHS is not StringExpr");
+    require(
+        vaep->rhs->token.content == "\"This is a message\"",
+        "Fifth statement's second element RHS is not '\"This is a message\"'");
+
+    require(
+        arep->expressions[2] != nullptr,
+        "Fifth statement does not have a third element");
+    require(
+        astType(arep->expressions[2], VariableAssignExpr),
+        "Fifth statement's third element is not VariableAssignExpr");
+    vaep = static_pointer_cast<VariableAssignExpr>(arep->expressions[2]);
+    require(
+        vaep->lhs != nullptr,
+        "Fifth statement's third element does not have a Variable");
+    require(
+        astType(vaep->lhs, DeclExpr),
+        "Fifth statement's third element LHS is not DeclExpr");
+    dep = static_pointer_cast<DeclExpr>(vaep->lhs);
+    require(
+        dep->lhs != nullptr,
+        "Fifth statement's third element LHS does not have a Type");
+    require(
+        astType(dep->lhs, VariableExpr),
+        "Fifth statement's third element LHS Type is not VariableExpr");
+    require(
+        dep->lhs->token.content == "Int",
+        "Fifth statement's third element LHS Type is not 'Int'");
+    require(
+        dep->rhs != nullptr,
+        "Fifth statement's third element LHS does not have a Variable");
+    require(
+        astType(dep->rhs, VariableExpr),
+        "Fifth statement's third element LHS Variable is not VariableExpr");
+    require(
+        dep->rhs->token.content == "count",
+        "Fifth statement's third element LHS Variable is not 'count'");
+    require(
+        vaep->rhs != nullptr,
+        "Fifth statement's third element does not have a Value");
+    require(
+        astType(vaep->rhs, VariableExpr),
+        "Fifth statement's third element RHS is not VariableExpr");
+    require(
+        vaep->rhs->token.content == "DEFAULT_COUNT",
+        "Fifth statement's third element RHS is not 'DEFAULT_COUNT'");
+
+    require(
+        filess.getNextStatement(stp),
+        "Cannot get sixth statement");
+    require(
+        astType(stp, VariableAssignExpr),
+        "Sixth statement is not VariableAssignExpr");
+    vaep = static_pointer_cast<VariableAssignExpr>(stp);
+    require(
+        vaep->lhs != nullptr,
+        "Sixth statement does not have a Variable");
+    require(
+        vaep->rhs != nullptr,
+        "Sixth statement does not have a Value");
     require(
         astType(vaep->lhs, VariableExpr),
-        "Fifth statement's Variable is not VariableExpr");
+        "Sixth statement's Variable is not VariableExpr");
     require(
         vaep->lhs->token.content == "_wr_func4",
-        "Fifth statement's Variable is not '_wr_func4");
+        "Sixth statement's Variable is not '_wr_func4");
     require(
         astType(vaep->rhs, BlockExpr),
-        "Fifth statement's Value is not BlockExpr");
+        "Sixth statement's Value is not BlockExpr");
     const shared_ptr<BlockExpr> blockp =
         static_pointer_cast<BlockExpr>(vaep->rhs);
     
@@ -175,25 +314,25 @@ int main()
     require(
         astType(blockp->statements[0], AddExpr),
         "Block's first statement is not AddExpr");
-    const shared_ptr<AddExpr> aep =
+    const shared_ptr<AddExpr> adep =
         static_pointer_cast<AddExpr>(blockp->statements[0]);
     require(
-        aep->lhs != nullptr,
+        adep->lhs != nullptr,
         "Block's first statement does not have a left-hand side");
     require(
-        aep->rhs != nullptr,
+        adep->rhs != nullptr,
         "Block's first statement does not have a right-hand side");
     require(
-        astType(aep->lhs, StringExpr),
+        astType(adep->lhs, StringExpr),
         "Block's first statement LHS is not StringExpr");
     require(
-        aep->lhs->token.content == "\"aaa\"",
+        adep->lhs->token.content == "\"aaa\"",
         "Block's first statement LHS is not '\"aaa\"'");
     require(
-        astType(aep->rhs, StringExpr),
+        astType(adep->rhs, StringExpr),
         "Block's first statement RHS is not StringExpr");
     require(
-        aep->rhs->token.content == "\"bbb\"",
+        adep->rhs->token.content == "\"bbb\"",
         "Block's first statement RHS is not '\"bbb\"'");
 
     require(

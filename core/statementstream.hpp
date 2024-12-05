@@ -13,12 +13,12 @@ class StatementStream
         const char* filename;
 
         StatementStream(std::shared_ptr<Lexer> lexp);
-        bool getNextStatement(std::shared_ptr<Statement>& stp);
+        bool getNextStatement(std::unique_ptr<const Statement>& stp);
 
     protected:
-        std::shared_ptr<Expression> getExpression(const Token& start, TokenID end);
+        std::unique_ptr<Expression> getExpression(const Token& start, TokenID end);
         virtual bool getNextToken(Token& tok) = 0;
         virtual bool checkCurlyBr(const Token& tok) = 0;
-        virtual bool checkProgramStmt(Token& tok, std::shared_ptr<Statement>& stp) = 0;
+        virtual bool checkProgramStmt(Token& tok, std::unique_ptr<const Statement>& stp) = 0;
         std::shared_ptr<Lexer> lexp;
 };

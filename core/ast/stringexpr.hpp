@@ -6,3 +6,4 @@ class StringExpr: public Expression
 {
     using Expression::Expression;
 };
+

@@ -16,7 +16,7 @@ ASTPrintVisitor& ASTPrintVisitor::instance()
     return visitor;
 }
 
-void ASTPrintVisitor::printBinOp(BinOpExpression& boe)
+void ASTPrintVisitor::printBinOp(const BinOpExpression& boe)
 {
     indent++;
     cout << string(indent, '\t')
@@ -33,7 +33,7 @@ void ASTPrintVisitor::printBinOp(BinOpExpression& boe)
     indent -= 2;
 }
 
-void ASTPrintVisitor::doAddExpr(AddExpr& ae)
+void ASTPrintVisitor::doAddExpr(const AddExpr& ae)
 {
     cout << string(indent, '\t')
          << "Addition: '"
@@ -41,20 +41,20 @@ void ASTPrintVisitor::doAddExpr(AddExpr& ae)
     printBinOp(ae);
 }
 
-void ASTPrintVisitor::doArrayExpr(ArrayExpr& ae)
+void ASTPrintVisitor::doArrayExpr(const ArrayExpr& ae)
 {
     cout << string(indent, '\t')
          << "Array: "
          << endl;
     indent++;
-    for (shared_ptr<Expression> expr : ae.expressions)
+    for (const unique_ptr<const Expression>& expr : ae.expressions)
         expr->accept(*this);
     indent--;
 }
 
-void ASTPrintVisitor::doAST(AST& ast)
+void ASTPrintVisitor::doAST(const AST& ast)
 {
-    for (shared_ptr<File> file : ast.files) {
+    for (const unique_ptr<File>& file : ast.files) {
         cout << string(indent, '\t')
             << "File: "
             << file->filename
@@ -63,7 +63,7 @@ void ASTPrintVisitor::doAST(AST& ast)
         file->accept(*this);
         indent--;
     }
-    for (shared_ptr<Target> target : ast.targets) {
+    for (const unique_ptr<Target>& target : ast.targets) {
         cout << string(indent, '\t')
              << "Target: "
              << targetTypeNames[target->type]
@@ -76,18 +76,18 @@ void ASTPrintVisitor::doAST(AST& ast)
     }
 }
 
-void ASTPrintVisitor::doBlockExpr(BlockExpr& be)
+void ASTPrintVisitor::doBlockExpr(const BlockExpr& be)
 {
     cout << string(indent, '\t')
          << "Block:"
          << endl;
     indent++;
-    for (shared_ptr<Statement> stp : be.statements)
+    for (const unique_ptr<const Statement>& stp : be.statements)
         stp->accept(*this);
     indent--;
 }
 
-void ASTPrintVisitor::doDeclExpr(DeclExpr& de)
+void ASTPrintVisitor::doDeclExpr(const DeclExpr& de)
 {
     cout << string(indent, '\t')
          << "Variable declaration:"
@@ -107,7 +107,7 @@ void ASTPrintVisitor::doDeclExpr(DeclExpr& de)
     indent -= 2;
 }
 
-void ASTPrintVisitor::doExpression(Expression& expr)
+void ASTPrintVisitor::doExpression(const Expression& expr)
 {
     // also: print expression's datatype
     cout << string(indent, '\t')
@@ -119,7 +119,7 @@ void ASTPrintVisitor::doExpression(Expression& expr)
          << endl;
 }
 
-void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
+void ASTPrintVisitor::doFunctionCallExpr(const FunctionCallExpr& fce)
 {
     cout << string(indent, '\t')
          << "Function call: '"
@@ -135,12 +135,12 @@ void ASTPrintVisitor::doFunctionCallExpr(FunctionCallExpr& fce)
               << " arguments";
     cout << endl;
     indent++;
-    for (shared_ptr<Expression> arg : fce.args)
+    for (const unique_ptr<const Expression>& arg : fce.args)
         arg->accept(*this);
     indent--;
 }
 
-void ASTPrintVisitor::doProgramStmt(ProgramStmt& stmt)
+void ASTPrintVisitor::doProgramStmt(const ProgramStmt& stmt)
 {
     cout << string(indent, '\t')
          << "Program statement: "
@@ -148,7 +148,7 @@ void ASTPrintVisitor::doProgramStmt(ProgramStmt& stmt)
          << endl;
 }
 
-void ASTPrintVisitor::doStatement(Statement& stmt)
+void ASTPrintVisitor::doStatement(const Statement& stmt)
 {
     cout << string(indent, '\t')
          << "Statement: "
@@ -156,14 +156,23 @@ void ASTPrintVisitor::doStatement(Statement& stmt)
          << endl;
 }
 
-void ASTPrintVisitor::doStatementList(StatementList& stmtlist)
+void ASTPrintVisitor::doStatementList(const StatementList& stmtlist)
 {
-    for (shared_ptr<Statement> stmt : stmtlist.statements) {
+    for (const unique_ptr<const Statement>& stmt : stmtlist.statements) {
         stmt->accept(*this);
     }
 }
 
-void ASTPrintVisitor::doVariableAssignExpr(VariableAssignExpr& vae)
+void ASTPrintVisitor::doTarget(const Target& t)
+{
+    for (const File* file : t.files) {
+        cout << string(indent, '\t')
+             << file->filename
+             << endl;
+    }
+}
+
+void ASTPrintVisitor::doVariableAssignExpr(const VariableAssignExpr& vae)
 {
     cout << string(indent, '\t')
          << "Variable assignment:"

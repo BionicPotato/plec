@@ -9,33 +9,33 @@ AST::AST(vector<const char*> args)
 : configureRunner(ASTConfigureRunner(*this))
 {
     for (const char* filename : args) {
-        files.push_back(make_shared<File>(filename));
+        files.push_back(make_unique<File>(filename));
     }
 }
 
-void AST::accept(ASTVisitor& visitor)
+void AST::accept(ASTVisitor& visitor) const
 {
     visitor.doAST(*this);
 }
 
 void AST::parse()
 {
-    shared_ptr<Statement> stp;
-    for (shared_ptr<File> filep : files)
+    unique_ptr<const Statement> stp;
+    for (unique_ptr<File>& filep : files)
     {
-        shared_ptr<Lexer> lexp = make_shared<Lexer>(filep->filename);
-        FileStmtStream filess(lexp);
+        FileStmtStream filess(make_shared<Lexer>(filep->filename));
         while (filess.getNextStatement(stp))
-            filep->statements.push_back(stp);
+            filep->statements.push_back(std::move(stp));
     }
 }
 
 void AST::configure()
 {
-    for (shared_ptr<File> filep : files)
+    for (unique_ptr<File>& filep : files)
     {
-        for (shared_ptr<Statement> stp : filep->statements) {
+        for (unique_ptr<const Statement>& stp : filep->statements) {
             stp->run(configureRunner);
         }
     }
 }
+

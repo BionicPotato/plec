@@ -2,9 +2,9 @@
 
 using namespace std;
 
-bool _astType(shared_ptr<Statement> stp, const type_info& t)
+bool _astType(const Statement* stp, const type_info& t)
 {
-    Statement* _s = stp.get();
-    return typeid(*_s) == t;
+    return typeid(*stp) == t;
 }
+
 

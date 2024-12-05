@@ -8,11 +8,11 @@
 struct ParsingExpression
 {
     Token token;
-    std::shared_ptr<Expression> exprp;
+    std::unique_ptr<Expression> exprp;
     std::list<std::list<ParsingExpression>::iterator>*itlist;
     std::list<std::list<ParsingExpression>::iterator>::iterator it;
 
-    ParsingExpression(Token token, std::shared_ptr<Expression> exprp, std::list<std::list<ParsingExpression>::iterator>* itlist);
+    ParsingExpression(Token token, std::unique_ptr<Expression> exprp, std::list<std::list<ParsingExpression>::iterator>* itlist);
 };
 
 void exprParse

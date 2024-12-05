@@ -6,8 +6,8 @@
 class BlockExpr: public Expression
 {
     public:
-        std::vector<std::shared_ptr<Statement>> statements;
+        std::vector<std::unique_ptr<const Statement>> statements;
 
         using Expression::Expression;
-        virtual void accept(ASTVisitor& visitor);
+        virtual void accept(ASTVisitor& visitor) const;
 };

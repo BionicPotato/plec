@@ -12,10 +12,10 @@ forward_list<pair<list<list<ParsingExpression>::iterator>::iterator, list<list<P
 ParsingExpression::ParsingExpression
 (
         Token token,
-        shared_ptr<Expression> exprp,
+        unique_ptr<Expression> exprp,
         list<list<ParsingExpression>::iterator>* itlist
 )
-: token(token), exprp(exprp), itlist(itlist) {}
+: token(token), exprp(std::move(exprp)), itlist(itlist) {}
 
 void eraseExpr(list<ParsingExpression>& exprs, list<ParsingExpression>::iterator it)
 {
@@ -47,7 +47,7 @@ void p_parseAtoms(list<list<ParsingExpression>::iterator>& itlist)
 {
     for (auto i : itlist) {
         if (!i->exprp)
-            i->exprp = make_shared<T>(i->token);
+            i->exprp = make_unique<T>(i->token);
     }
 }
 
@@ -61,7 +61,7 @@ void p_parseBinOp(list<ParsingExpression>& exprs, list<ParsingExpression>::itera
         if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
         if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
 
-        i->exprp = make_shared<T>(i->token, lhs->exprp, rhs->exprp);
+        i->exprp = make_unique<T>(i->token, std::move(lhs->exprp), std::move(rhs->exprp));
 
         eraseExpr(exprs, lhs);
         eraseExpr(exprs, rhs);
@@ -98,8 +98,8 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
         if (!type->exprp) throw UnexpectedTokenException(type->token);
 
         if (astType(type->exprp, VariableExpr)) {
-            shared_ptr<DeclExpr> dep = make_shared<DeclExpr>(var->token, type->exprp, var->exprp);
-            var->exprp = dep;
+            unique_ptr<DeclExpr> dep = make_unique<DeclExpr>(var->token, std::move(type->exprp), std::move(var->exprp));
+            var->exprp = std::move(dep);
 
             eraseExpr(exprs, type);
         }
@@ -116,24 +116,20 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
 
             if (!callee->exprp) throw UnexpectedTokenException(callee->token);
 
-            shared_ptr<FunctionCallExpr> fcep = make_shared<FunctionCallExpr>(i->token, callee->exprp);
-            
+            unique_ptr<FunctionCallExpr> fcep = make_unique<FunctionCallExpr>(i->token, std::move(callee->exprp));
+            eraseExpr(exprs, callee);
+
             //if there's nothing to the right, it's ok, just add no arguments to the function call
             if (!(args == exprs.end() || !args->exprp)) {
-                const Expression* _a = args->exprp.get();
-                const type_info& t_a = typeid(*_a);
-                const type_info& t_ae = typeid(ArrayExpr);
-                if (t_a != t_ae) throw UnexpectedTokenException(args->token);
-                shared_ptr<ArrayExpr> aep = static_pointer_cast<ArrayExpr>(args->exprp);
-                for (shared_ptr<Expression> arg : aep->expressions) {
-                    fcep->args.push_back(arg);
+                if (!astType(args->exprp, ArrayExpr)) throw UnexpectedTokenException(args->token);
+                ArrayExpr* aep = (ArrayExpr*)args->exprp.get();
+                for (unique_ptr<const Expression>& arg : aep->expressions) {
+                    fcep->args.push_back(std::move(arg));
                 }
                 eraseExpr(exprs, args);
             }
 
-            i->exprp = fcep;
-
-            eraseExpr(exprs, callee);
+            i->exprp = std::move(fcep);
         }
     }
 }
@@ -172,15 +168,13 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
         if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
         if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
 
-        shared_ptr<ArrayExpr> arrayp = make_shared<ArrayExpr>(i->token);
+        unique_ptr<ArrayExpr> arrayp = make_unique<ArrayExpr>(i->token);
 
-        arrayp->expressions.push_back(lhs->exprp);
-        arrayp->expressions.push_back(rhs->exprp);
+        arrayp->expressions.push_back(std::move(lhs->exprp));
+        arrayp->expressions.push_back(std::move(rhs->exprp));
 
         eraseExpr(exprs, lhs);
         eraseExpr(exprs, rhs);
-
-        i->exprp = arrayp;
 
         for (auto j = next(commas.begin()); j != commas.end(); ++j)
         {
@@ -189,7 +183,7 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 
             if (!item->exprp) throw UnexpectedTokenException(item->token);
 
-            arrayp->expressions.push_back(item->exprp);
+            arrayp->expressions.push_back(std::move(item->exprp));
 
             eraseExpr(exprs, item);
 
@@ -198,6 +192,7 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
             eraseExpr(exprs, i);
         }
         
+        commas.front()->exprp = std::move(arrayp);
     }
 }
 

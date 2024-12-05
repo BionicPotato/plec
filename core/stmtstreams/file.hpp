@@ -12,5 +12,5 @@ class FileStmtStream: public StatementStream
     protected:
         virtual bool getNextToken(Token& tok);
         virtual bool checkCurlyBr(const Token& tok);
-        virtual bool checkProgramStmt(Token& tok, std::shared_ptr<Statement>& stp);
+        virtual bool checkProgramStmt(Token& tok, std::unique_ptr<const Statement>& stp);
 };

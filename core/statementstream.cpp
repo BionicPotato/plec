@@ -1,3 +1,4 @@
+#include "asttype.hpp"
 #include "statementstream.hpp"
 #include "ast/expressions.hpp"
 #include "ast/statement.hpp"
@@ -16,7 +17,7 @@ using namespace std;
 
 StatementStream::StatementStream(shared_ptr<Lexer> lexp): filename(lexp->filename), lexp(lexp) {}
 
-bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
+bool StatementStream::getNextStatement(unique_ptr<const Statement>& stp)
 {
     Token tok;
     if (!getNextToken(tok)) return false;
@@ -26,7 +27,7 @@ bool StatementStream::getNextStatement(shared_ptr<Statement>& stp)
     return true;
 }
 
-shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenID end)
+unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenID end)
 {
     Token tok = start;
     list<ParsingExpression> exprs;
@@ -45,72 +46,72 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
             switch (tok.id)
             {
                 case TOK_OPENCURLYBR: {
-                    shared_ptr<BlockExpr> blockp = make_shared<BlockExpr>(tok);
-                    exprs.emplace_back(tok, blockp, nullptr);
+                    unique_ptr<BlockExpr> blockp = make_unique<BlockExpr>(tok);
+                    BlockExpr* blockrp = blockp.get();
+                    exprs.emplace_back(tok, std::move(blockp), nullptr);
                     BlockStmtStream blockss(lexp);
-                    shared_ptr<Statement> blockstp;
+                    unique_ptr<const Statement> blockstp;
                     while (blockss.getNextStatement(blockstp))
-                        blockp->statements.push_back(blockstp);
+                        blockrp->statements.push_back(std::move(blockstp));
                 }
                 break;
 
                 case TOK_OPENSQBR: {
-                    shared_ptr<Expression> exprp;
+                    unique_ptr<Expression> exprp;
                     if (!getNextToken(tok)) throw UnexpectedTokenException(tok);
                     exprp = getExpression(tok, TOK_CLOSESQBR);
-                    shared_ptr<ArrayExpr> arrayp;
-                    const Expression* _e = exprp.get();
-                    const type_info& t_e = typeid(*_e);
-                    const type_info& t_ae = typeid(ArrayExpr);
-                    if (t_e == t_ae) {
-                        arrayp = static_pointer_cast<ArrayExpr>(exprp);
+
+                    unique_ptr<ArrayExpr> arrayp;
+                    if (astType(exprp, ArrayExpr)) {
+                        arrayp = moveCast<ArrayExpr>(exprp);
                     } else {
-                        arrayp = make_shared<ArrayExpr>(tok);
-                        arrayp->expressions.push_back(exprp);
+                        arrayp = make_unique<ArrayExpr>(tok);
+                        arrayp->expressions.push_back(std::move(exprp));
                     }
-                    exprs.emplace_back(tok, arrayp, nullptr);
+
+                    exprs.emplace_back(tok, std::move(arrayp), nullptr);
                 }
                 break;
 
                 case TOK_OPENPAREN: {
-                    shared_ptr<Expression> parenexprp;
+                    unique_ptr<Expression> parenexprp;
                     parenexprp = getExpression(tok, TOK_CLOSEPAREN);
-                    exprs.emplace_back(parenexprp->token, parenexprp, nullptr);
+                    exprs.emplace_back(parenexprp->token, std::move(parenexprp), nullptr);
                 }
                 break;
                 
                 case TOK_IDENTIFIER:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &identifiers);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &identifiers);
                     identifiers.push_back(prev(exprs.end()));
                     exprs.back().it = prev(identifiers.end());
                 break;
 
                 case TOK_STRING:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &strings);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &strings);
                     strings.push_back(prev(exprs.end()));
                     exprs.back().it = prev(strings.end());
                 break;
 
                 case TOK_CALL:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &calls);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &calls);
                     calls.push_back(prev(exprs.end()));
                     exprs.back().it = prev(calls.end());
                 break;
 
                 case TOK_PLUS:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &addsub);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &addsub);
                     addsub.push_back(prev(exprs.end()));
                     exprs.back().it = prev(addsub.end());
                 break;
                 
                 case TOK_COLON:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &colons);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &colons);
                     colons.push_back(prev(exprs.end()));
                     exprs.back().it = prev(colons.end());
                 break;
 
                 case TOK_COMMA:
-                    exprs.emplace_back(tok, shared_ptr<Expression>(nullptr), &commas);
+                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &commas);
                     commas.push_back(prev(exprs.end()));
                     exprs.back().it = prev(commas.end());
                 break;
@@ -138,12 +139,12 @@ shared_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
         );
 
         if (exprs.size() != 1) {
-            shared_ptr<stack<shared_ptr<Expression>>> errorExprs;
-            for (ParsingExpression p : exprs) errorExprs->push(p.exprp);
-            throw AmbiguousStatementException(errorExprs);
+            unique_ptr<stack<unique_ptr<Expression>>> errorExprs;
+            for (ParsingExpression& p : exprs) errorExprs->push(std::move(p.exprp));
+            throw AmbiguousStatementException(std::move(errorExprs));
         }
 
-        shared_ptr<Expression> retval = exprs.front().exprp;
+        unique_ptr<Expression> retval = std::move(exprs.front().exprp);
         exprs.clear(); // Avoids calling ParsingExpression's destructor with an invalid iterator
         return retval;
     }

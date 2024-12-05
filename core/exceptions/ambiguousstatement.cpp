@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "../exceptions.hpp"
 
-AmbiguousStatementException::AmbiguousStatementException(std::shared_ptr<std::stack<std::shared_ptr<Expression>>> exprs): exprs(exprs) {}
+AmbiguousStatementException::AmbiguousStatementException(std::unique_ptr<std::stack<std::unique_ptr<Expression>>> exprs): exprs(std::move(exprs)) {}
 
 const char* AmbiguousStatementException::what() const noexcept
 {

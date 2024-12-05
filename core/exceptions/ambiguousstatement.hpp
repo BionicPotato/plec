@@ -8,9 +8,9 @@
 class AmbiguousStatementException: public std::exception
 {
     public:
-        AmbiguousStatementException(std::shared_ptr<std::stack<std::shared_ptr<Expression>>> exprs);
+        AmbiguousStatementException(std::unique_ptr<std::stack<std::unique_ptr<Expression>>> exprs);
         virtual const char* what() const noexcept;
 
     private:
-        std::shared_ptr<std::stack<std::shared_ptr<Expression>>> exprs;
+        std::unique_ptr<std::stack<std::unique_ptr<Expression>>> exprs;
 };

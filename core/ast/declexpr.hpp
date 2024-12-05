@@ -6,6 +6,6 @@ class DeclExpr: public BinOpExpression
 {
     public:
         using BinOpExpression::BinOpExpression;
-        virtual void accept(ASTVisitor& visitor);
+        virtual void accept(ASTVisitor& visitor) const;
 };
 

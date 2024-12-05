@@ -12,9 +12,9 @@ using namespace std;
 // Ambiguous statements are a reliable way of causing a parsing error, so this is what this test is testing
 int main()
 {
-    shared_ptr<Lexer> lexp = make_shared<Lexer>("23-crash-when-encountering-a-number-token.ple");
+    shared_ptr<Lexer> lexp = make_shared<Lexer>("regress-23.ple");
     FileStmtStream filess(lexp);
-    shared_ptr<Statement> stp;
+    unique_ptr<const Statement> stp;
 
     try {
         filess.getNextStatement(stp);

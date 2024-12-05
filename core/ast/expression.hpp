@@ -7,5 +7,5 @@ class Expression: public Statement
 {
     public:
         using Statement::Statement;
-        virtual void accept(ASTVisitor& visitor);
+        virtual void accept(ASTVisitor& visitor) const;
 };

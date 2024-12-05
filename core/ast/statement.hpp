@@ -12,6 +12,7 @@ class Statement: public ASTVisitable, public std::enable_shared_from_this<Statem
         Token token;
 
         Statement(Token& token);
-        virtual void accept(ASTVisitor& visitor);
-        virtual void run(Runner& r);
+        virtual void accept(ASTVisitor& visitor) const;
+        virtual void run(Runner& r) const;
 };
+

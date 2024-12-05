@@ -10,21 +10,23 @@ class FunctionCallExpr;
 class ProgramStmt;
 class Statement;
 class StatementList;
+class Target;
 class VariableAssignExpr;
 
 class ASTVisitor
 {
     public:
-        virtual void doAddExpr(AddExpr& ae) = 0;
-        virtual void doArrayExpr(ArrayExpr& ae) = 0;
-        virtual void doAST(AST& ast) = 0;
-        virtual void doBlockExpr(BlockExpr& be) = 0;
-        virtual void doDeclExpr(DeclExpr& de) = 0;
-        virtual void doExpression(Expression& expr) = 0;
-        virtual void doFunctionCallExpr(FunctionCallExpr& fce) = 0;
-	virtual void doProgramStmt(ProgramStmt& stmt) = 0;
-        virtual void doStatement(Statement& stmt) = 0;
-        virtual void doStatementList(StatementList& stmtlist) = 0;
-        virtual void doVariableAssignExpr(VariableAssignExpr& vae) = 0;
+        virtual void doAddExpr(const AddExpr& ae) = 0;
+        virtual void doArrayExpr(const ArrayExpr& ae) = 0;
+        virtual void doAST(const AST& ast) = 0;
+        virtual void doBlockExpr(const BlockExpr& be) = 0;
+        virtual void doDeclExpr(const DeclExpr& de) = 0;
+        virtual void doExpression(const Expression& expr) = 0;
+        virtual void doFunctionCallExpr(const FunctionCallExpr& fce) = 0;
+	virtual void doProgramStmt(const ProgramStmt& stmt) = 0;
+        virtual void doStatement(const Statement& stmt) = 0;
+        virtual void doStatementList(const StatementList& stmtlist) = 0;
+        virtual void doTarget(const Target& t) = 0;
+        virtual void doVariableAssignExpr(const VariableAssignExpr& vae) = 0;
 };
 

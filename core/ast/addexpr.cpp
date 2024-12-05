@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void AddExpr::accept(ASTVisitor& visitor)
+void AddExpr::accept(ASTVisitor& visitor) const
 {
     visitor.doAddExpr(*this);
 }

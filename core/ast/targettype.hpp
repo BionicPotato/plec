@@ -8,3 +8,4 @@ enum TargetType
 };
 
 extern std::string targetTypeNames[2];
+

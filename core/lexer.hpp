@@ -13,7 +13,7 @@ class Lexer
         bool getNextToken(Token& tok);
     
     private:
-        std::shared_ptr<std::istream> input;
+        std::unique_ptr<std::istream, void (*)(std::istream*)> input;
         unsigned lineNo;
         unsigned colNo;
         std::stack<unsigned> oldColNos;
@@ -24,3 +24,4 @@ class Lexer
         void ungetChar();
         TokenID getTokenID(const std::string& tokstr);
 };
+

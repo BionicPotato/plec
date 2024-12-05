@@ -6,3 +6,4 @@ class VariableExpr: public Expression
 {
     using Expression::Expression;
 };
+

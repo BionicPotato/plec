@@ -13,7 +13,7 @@ int main()
 {
     shared_ptr<Lexer> lexp = make_shared<Lexer>("getnextstatement.ple");
     FileStmtStream filess(lexp);
-    shared_ptr<Statement> stp;
+    unique_ptr<const Statement> stp;
 
     require(
         filess.getNextStatement(stp),
@@ -21,8 +21,9 @@ int main()
     require(
         astType(stp, ProgramStmt),
         "First statement is not ProgramStmt");
+     const ProgramStmt* psp = static_cast<const ProgramStmt*>(stp.get());
     require(
-        static_pointer_cast<ProgramStmt>(stp)->programName == "test",
+        psp->programName == "test",
         "Program name is not 'test'");
 
     require(
@@ -31,8 +32,7 @@ int main()
     require(
         astType(stp, FunctionCallExpr),
         "Second statement is not FunctionCallExpr");
-    shared_ptr<FunctionCallExpr> fcep =
-        static_pointer_cast<FunctionCallExpr>(stp);
+    const FunctionCallExpr* fcep = static_cast<const FunctionCallExpr*>(stp.get());
     require(
         fcep->callee.get() != nullptr,
         "Second statement does not have a Callee");
@@ -52,7 +52,7 @@ int main()
     require(
         astType(stp, FunctionCallExpr),
         "Third statement is not FunctionCallExpr");
-    fcep = static_pointer_cast<FunctionCallExpr>(stp);
+    fcep = static_cast<const FunctionCallExpr*>(stp.get());
     require(
         fcep->callee.get() != nullptr,
         "Third statement does not have a Callee");
@@ -65,12 +65,12 @@ int main()
     require(
         fcep->args.size() == 1,
         "Third statement does not have one argument");
-    shared_ptr<Expression> arg0 = fcep->args[0];
+    const Expression* arg0 = fcep->args[0].get();
     require(
-        arg0.get() != nullptr,
+        arg0 != nullptr,
         "Third statement's argument is null");
     require(
-        astType(arg0, StringExpr),
+        typeid(*arg0) == typeid(StringExpr),
         "Third statement's argument is not StringExpr");
     require(
         arg0->token.content == "\"aaa\"",
@@ -82,7 +82,7 @@ int main()
     require(
         astType(stp, FunctionCallExpr),
         "Fourth statement is not FunctionCallExpr");
-    fcep = static_pointer_cast<FunctionCallExpr>(stp);
+    fcep = static_cast<const FunctionCallExpr*>(stp.get());
     require(
         fcep->callee.get() != nullptr,
         "Fourth statement does not have a Callee");
@@ -95,9 +95,9 @@ int main()
     require(
         fcep->args.size() == 3,
         "Fourth statement does not have 3 arguments");
-    arg0 = fcep->args[0];
+    arg0 = fcep->args[0].get();
     require(
-        astType(arg0, VariableExpr),
+        typeid(*arg0) == typeid(VariableExpr),
         "Fourth statement's first argument is not VariableExpr");
     require(
         arg0->token.content == "wfwe",
@@ -105,8 +105,7 @@ int main()
     require(
         astType(fcep->args[1], AddExpr),
         "Fourth statement's second argument is not AddExpr");
-    shared_ptr<AddExpr> arg1 =
-        static_pointer_cast<AddExpr>(fcep->args[1]);
+    const AddExpr* arg1 = static_cast<const AddExpr*>(fcep->args[1].get());
     require(
         arg1->lhs.get() != nullptr,
         "Fourth statement's second argument does not have a left-hand side");
@@ -128,8 +127,7 @@ int main()
     require(
         astType(fcep->args[2], FunctionCallExpr),
         "Fourth statement's third argument is not FunctionCallExpr");
-    shared_ptr<FunctionCallExpr> arg2 =
-        static_pointer_cast<FunctionCallExpr>(fcep->args[2]);
+    const FunctionCallExpr* arg2 = static_cast<const FunctionCallExpr*>(fcep->args[2].get());
     require(
         arg2->callee.get() != nullptr,
         "Fourth statement's third argument does not have a Callee");
@@ -149,8 +147,7 @@ int main()
     require(
         astType(stp, ArrayExpr),
         "Fifth statement is not ArrayExpr");
-    shared_ptr<ArrayExpr> arep =
-        static_pointer_cast<ArrayExpr>(stp);
+    const ArrayExpr* arep = static_cast<const ArrayExpr*>(stp.get());
     require(
         arep->expressions.size() == 3,
         "Fifth statement does not have 3 elements");
@@ -161,8 +158,7 @@ int main()
     require(
         astType(arep->expressions[0], VariableAssignExpr),
         "Fifth statement's first element is not VariableAssignExpr");
-    shared_ptr<VariableAssignExpr> vaep =
-        static_pointer_cast<VariableAssignExpr>(arep->expressions[0]);
+    const VariableAssignExpr* vaep = static_cast<const VariableAssignExpr*>(arep->expressions[0].get());
     require(
         vaep->lhs != nullptr,
         "Fifth statement's first element does not have a Variable");
@@ -172,8 +168,7 @@ int main()
     require(
         astType(vaep->lhs, DeclExpr),
         "Fifth statement's first element LHS is not DeclExpr");
-    shared_ptr<DeclExpr> dep =
-        static_pointer_cast<DeclExpr>(vaep->lhs);
+    const DeclExpr* dep = static_cast<const DeclExpr*>(vaep->lhs.get());
     require(
         dep->lhs != nullptr,
         "Fifth statement's first element LHS does not have a Type");
@@ -205,14 +200,14 @@ int main()
     require(
         astType(arep->expressions[1], VariableAssignExpr),
         "Fifth statement's second element is not VariableAssignExpr");
-    vaep = static_pointer_cast<VariableAssignExpr>(arep->expressions[1]);
+    vaep = static_cast<const VariableAssignExpr*>(arep->expressions[1].get());
     require(
         vaep->lhs != nullptr,
         "Fifth statement's second element does not have a Variable");
     require(
         astType(vaep->lhs, DeclExpr),
         "Fifth statement's second element LHS is not DeclExpr");
-    dep = static_pointer_cast<DeclExpr>(vaep->lhs);
+    dep = static_cast<const DeclExpr*>(vaep->lhs.get());
     require(
         dep->lhs != nullptr,
         "Fifth statement's second element LHS does not have a Type");
@@ -247,14 +242,14 @@ int main()
     require(
         astType(arep->expressions[2], VariableAssignExpr),
         "Fifth statement's third element is not VariableAssignExpr");
-    vaep = static_pointer_cast<VariableAssignExpr>(arep->expressions[2]);
+    vaep = static_cast<const VariableAssignExpr*>(arep->expressions[2].get());
     require(
         vaep->lhs != nullptr,
         "Fifth statement's third element does not have a Variable");
     require(
         astType(vaep->lhs, DeclExpr),
         "Fifth statement's third element LHS is not DeclExpr");
-    dep = static_pointer_cast<DeclExpr>(vaep->lhs);
+    dep = static_cast<const DeclExpr*>(vaep->lhs.get());
     require(
         dep->lhs != nullptr,
         "Fifth statement's third element LHS does not have a Type");
@@ -289,7 +284,7 @@ int main()
     require(
         astType(stp, VariableAssignExpr),
         "Sixth statement is not VariableAssignExpr");
-    vaep = static_pointer_cast<VariableAssignExpr>(stp);
+    vaep = static_cast<const VariableAssignExpr*>(stp.get());
     require(
         vaep->lhs != nullptr,
         "Sixth statement does not have a Variable");
@@ -305,8 +300,7 @@ int main()
     require(
         astType(vaep->rhs, BlockExpr),
         "Sixth statement's Value is not BlockExpr");
-    const shared_ptr<BlockExpr> blockp =
-        static_pointer_cast<BlockExpr>(vaep->rhs);
+    const BlockExpr* blockp = static_cast<const BlockExpr*>(vaep->rhs.get());
     
     require(
         blockp->statements.size() == 3,
@@ -314,8 +308,7 @@ int main()
     require(
         astType(blockp->statements[0], AddExpr),
         "Block's first statement is not AddExpr");
-    const shared_ptr<AddExpr> adep =
-        static_pointer_cast<AddExpr>(blockp->statements[0]);
+    const AddExpr* adep = static_cast<const AddExpr*>(blockp->statements[0].get());
     require(
         adep->lhs != nullptr,
         "Block's first statement does not have a left-hand side");
@@ -338,7 +331,7 @@ int main()
     require(
         astType(blockp->statements[1], FunctionCallExpr),
         "Block's second statement is not FunctionCallExpr");
-    fcep = static_pointer_cast<FunctionCallExpr>(blockp->statements[1]);
+    fcep = static_cast<const FunctionCallExpr*>(blockp->statements[1].get());
     require(
         fcep->callee != nullptr,
         "Block's second statement does not have a Callee");
@@ -355,7 +348,7 @@ int main()
     require(
         astType(blockp->statements[2], FunctionCallExpr),
         "Block's third statement is not FunctionCallExpr");
-    fcep = static_pointer_cast<FunctionCallExpr>(blockp->statements[2]);
+    fcep = static_cast<const FunctionCallExpr*>(blockp->statements[2].get());
     require(
         fcep->callee != nullptr,
         "Block's third statement does not have a Callee");

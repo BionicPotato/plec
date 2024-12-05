@@ -10,17 +10,18 @@ class ASTPrintVisitor: public ASTVisitor
     public:
         static ASTPrintVisitor& instance();
 
-        virtual void doAddExpr(AddExpr& ae);
-        virtual void doArrayExpr(ArrayExpr& ae);
-        virtual void doAST(AST& ast);
-        virtual void doBlockExpr(BlockExpr& be);
-        virtual void doDeclExpr(DeclExpr& de);
-        virtual void doExpression(Expression& expr);
-        virtual void doFunctionCallExpr(FunctionCallExpr& fce);
-        virtual void doProgramStmt(ProgramStmt& stmt);
-        virtual void doStatement(Statement& stmt);
-        virtual void doStatementList(StatementList& stmtlist);
-        virtual void doVariableAssignExpr(VariableAssignExpr& vae);
+        virtual void doAddExpr(const AddExpr& ae);
+        virtual void doArrayExpr(const ArrayExpr& ae);
+        virtual void doAST(const AST& ast);
+        virtual void doBlockExpr(const BlockExpr& be);
+        virtual void doDeclExpr(const DeclExpr& de);
+        virtual void doExpression(const Expression& expr);
+        virtual void doFunctionCallExpr(const FunctionCallExpr& fce);
+        virtual void doProgramStmt(const ProgramStmt& stmt);
+        virtual void doStatement(const Statement& stmt);
+        virtual void doStatementList(const StatementList& stmtlist);
+        virtual void doTarget(const Target& t);
+        virtual void doVariableAssignExpr(const VariableAssignExpr& vae);
     
     private:
         uint8_t indent;
@@ -29,6 +30,6 @@ class ASTPrintVisitor: public ASTVisitor
         ASTPrintVisitor(const ASTPrintVisitor&);
         ASTPrintVisitor& operator= (const ASTPrintVisitor&);
 
-        void printBinOp(BinOpExpression& boe);
+        void printBinOp(const BinOpExpression& boe);
 };
 

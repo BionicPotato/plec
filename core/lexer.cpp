@@ -8,19 +8,26 @@
 
 using namespace std;
 
-struct noop
+/* struct noop
 {
     void operator()(...) const {}
-};
+}; */
+
+void deleteIstreamNoop(istream* p) {}
+void deleteIstream(istream* p)
+{
+    delete p;
+}
 
 bool isalnumund(char c) {return isalnum(c) || c == '_';}
 bool isalund(char c) {return isalpha(c) || c == '_';}
 
-shared_ptr<istream> getInput(const char* filename)
+using IstreamDeleter = void (*)(istream*);
+unique_ptr<istream, IstreamDeleter> getInput(const char* filename)
 {
-    shared_ptr<istream> in;
-    if (filename[0] == '\0') in.reset(&cin, noop());
-    else in = make_shared<ifstream>(filename);
+    unique_ptr<istream, IstreamDeleter> in(&cin, deleteIstreamNoop);
+    if (filename[0] != '\0')
+        in = unique_ptr<ifstream, IstreamDeleter>(new ifstream(filename), deleteIstream);
     return in;
 }
 
@@ -172,3 +179,4 @@ TokenID Lexer::getTokenID(const string& tokstr)
 
     return TOK_UNKNOWN;
 }
+

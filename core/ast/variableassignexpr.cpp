@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void VariableAssignExpr::accept(ASTVisitor& visitor)
+void VariableAssignExpr::accept(ASTVisitor& visitor) const
 {
     visitor.doVariableAssignExpr(*this);
 }

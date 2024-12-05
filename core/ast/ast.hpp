@@ -11,12 +11,13 @@
 class AST: public ASTVisitable
 {
     public:
-        std::vector<std::shared_ptr<File>> files;
-        std::vector<std::shared_ptr<Target>> targets;
+        std::vector<std::unique_ptr<File>> files;
+        std::vector<std::unique_ptr<Target>> targets;
         ASTConfigureRunner configureRunner;
 
         AST(std::vector<const char*> args);
-        virtual void accept(ASTVisitor& visitor);
+        virtual void accept(ASTVisitor& visitor) const;
         void parse();
         void configure();
 };
+

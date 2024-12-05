@@ -6,9 +6,9 @@
 class BinOpExpression: public Expression
 {
     public:
-        std::shared_ptr<Expression> lhs;
-        std::shared_ptr<Expression> rhs;
+        std::unique_ptr<const Expression> lhs;
+        std::unique_ptr<const Expression> rhs;
 
-        BinOpExpression(Token& token, std::shared_ptr<Expression> lhs, std::shared_ptr<Expression> rhs);
+        BinOpExpression(Token& token, std::unique_ptr<const Expression> lhs, std::unique_ptr<const Expression> rhs);
 };
 

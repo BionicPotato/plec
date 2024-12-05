@@ -6,6 +6,6 @@ class ASTVisitable
 {
     public:
         virtual ~ASTVisitable() = default;
-        virtual void accept(ASTVisitor& visitor) = 0;
+        virtual void accept(ASTVisitor& visitor) const = 0;
 };
 

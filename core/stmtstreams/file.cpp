@@ -16,7 +16,7 @@ bool FileStmtStream::checkCurlyBr(const Token& tok)
     return false;
 }
 
-bool FileStmtStream::checkProgramStmt(Token& tok, shared_ptr<Statement>& stp)
+bool FileStmtStream::checkProgramStmt(Token& tok, unique_ptr<const Statement>& stp)
 {
     if (tok.id == TOK_PROGRAM) {
         Token progtok = tok;
@@ -27,7 +27,7 @@ bool FileStmtStream::checkProgramStmt(Token& tok, shared_ptr<Statement>& stp)
         getNextToken(t2);
         if (t2.id != TOK_SEMICOLON)
             throw UnexpectedTokenException(t2);
-        stp = make_shared<ProgramStmt>(progtok, tok.content);
+        stp = make_unique<ProgramStmt>(progtok, tok.content);
         return true;
     }
     return false;

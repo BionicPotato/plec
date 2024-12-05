@@ -6,12 +6,14 @@
 
 class File;
 
-class Target: public StatementList
+class Target: public ASTVisitable
 {
     public:
         const std::string name;
-        std::vector<std::shared_ptr<File>> files;
         TargetType type;
+        std::vector<const File*> files;
 
         Target(const std::string& name, TargetType type);
+        virtual void accept(ASTVisitor& visitor) const;
 };
+

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void DeclExpr::accept(ASTVisitor& visitor)
+void DeclExpr::accept(ASTVisitor& visitor) const
 {
     visitor.doDeclExpr(*this);
 }

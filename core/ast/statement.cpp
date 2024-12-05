@@ -4,13 +4,10 @@
 
 Statement::Statement(Token& token): token(token) {}
 
-void Statement::accept(ASTVisitor& visitor)
+void Statement::accept(ASTVisitor& visitor) const
 {
     visitor.doStatement(*this);
 }
 
-void Statement::run(Runner& r)
-{
-    r.addToTarget(shared_from_this());
-}
+void Statement::run(Runner& r) const {}
 

@@ -5,43 +5,42 @@
 
 using namespace std;
 
-ASTConfigureRunner::ASTConfigureRunner(AST& ast): ast(ast){}
-
-void ASTConfigureRunner::addToTarget(shared_ptr<Statement> stp)
-{
-    targetp->statements.push_back(stp);
-}
+ASTConfigureRunner::ASTConfigureRunner(AST& ast): ast(ast) {}
 
 void ASTConfigureRunner::setTarget(string filename, TargetType targetType, string targetName)
 {
-    shared_ptr<File> filep;
+    File* filep;
 
-    for (shared_ptr<File> fp : ast.files) {
+    for (const unique_ptr<File>& fp : ast.files) {
         if (fp->filename == filename) {
-            filep = fp;
+            filep = fp.get();
             break;
         }
     }
     if (!filep) throw UnknownFilenameException(filename);
 
-    for (shared_ptr<Target> tp : ast.targets)
+    for (const unique_ptr<Target>& tp : ast.targets)
     {
         if (tp->name == targetName) {
-            targetp = tp;
-            targetp->files.push_back(filep);
+            if (tp->type != targetType) {
+                //TODO: error: declaring a target with the same name but a different type!
+            }
+            tp->files.push_back(filep);
             return;
         }
     }
 
+    unique_ptr<Target> tp;
     switch (targetType)
     {
         case TARG_PROGRAM:
-            targetp = make_shared<Program>(targetName);
-            ast.targets.push_back(targetp);
+            tp = make_unique<Program>(targetName);
+            tp->files.push_back(filep);
+            ast.targets.push_back(std::move(tp));
         break;
         
         case TARG_LIB:
-            //targetp = make_shared...
+            //tp = make_unique...
         break;
     }
 }

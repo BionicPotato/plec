@@ -1,5 +1,5 @@
 #include "binopexpression.hpp"
 
-BinOpExpression::BinOpExpression(Token& token, std::shared_ptr<Expression> lhs, std::shared_ptr<Expression> rhs)
-: Expression(token), lhs(lhs), rhs(rhs) {}
+BinOpExpression::BinOpExpression(Token& token, std::unique_ptr <const Expression> lhs, std::unique_ptr<const Expression> rhs)
+: Expression(token), lhs(std::move(lhs)), rhs(std::move(rhs)) {}
 

@@ -50,8 +50,7 @@ int main()
     require(
         astType(i->exprp, DeclExpr),
         "First expression is not DeclExpr");
-    shared_ptr<DeclExpr> dep =
-        static_pointer_cast<DeclExpr>(i->exprp);
+    const DeclExpr* dep = static_cast<DeclExpr*>(i->exprp.get());
     require(
         astType(dep->lhs, VariableExpr),
         "First expression's LHS is not VariableExpr");
@@ -84,7 +83,7 @@ int main()
     require(
         astType(i->exprp, DeclExpr),
         "Fifth expression is not DeclExpr");
-    dep = static_pointer_cast<DeclExpr>(i->exprp);
+    dep = static_cast<DeclExpr*>(i->exprp.get());
     require(
         astType(dep->lhs, VariableExpr),
         "Fifth expression's LHS is not VariableExpr");

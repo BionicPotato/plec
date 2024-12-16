@@ -10,7 +10,7 @@ class Target: public ASTVisitable
 {
     public:
         const std::string name;
-        TargetType type;
+        const TargetType type;
         std::vector<const File*> files;
 
         Target(const std::string& name, TargetType type);

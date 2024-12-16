@@ -8,9 +8,9 @@ class Expression;
 class ArrayExpr: public Expression
 {
     public:
-        std::vector<std::unique_ptr<const Expression>> expressions;
+        /*const*/ std::vector<std::unique_ptr<const Expression>> expressions;
 
-        using Expression::Expression;
+        ArrayExpr(Token& token, std::vector<std::unique_ptr<const Expression>>&& expressions);
         virtual void accept(ASTVisitor& visitor) const;
 };
 

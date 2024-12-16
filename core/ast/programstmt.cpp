@@ -5,7 +5,7 @@
 
 using namespace std;
 
-ProgramStmt::ProgramStmt(Token& token, string programName)
+ProgramStmt::ProgramStmt(Token& token, const string& programName)
 : Statement(token), programName(programName) {}
 
 void ProgramStmt::run(Runner& r) const

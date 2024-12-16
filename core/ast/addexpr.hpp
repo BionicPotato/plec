@@ -10,3 +10,4 @@ class AddExpr: public BinOpExpression
         using BinOpExpression::BinOpExpression;
         virtual void accept(ASTVisitor& visitor) const;
 };
+

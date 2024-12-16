@@ -5,13 +5,8 @@
 
 using namespace std;
 
-AST::AST(vector<const char*> args)
-: configureRunner(ASTConfigureRunner(*this))
-{
-    for (const char* filename : args) {
-        files.push_back(make_unique<File>(filename));
-    }
-}
+AST::AST(vector<const char*>&& args)
+: filenames(std::move(args)), configureRunner(ASTConfigureRunner(*this)) {}
 
 void AST::accept(ASTVisitor& visitor) const
 {
@@ -21,19 +16,21 @@ void AST::accept(ASTVisitor& visitor) const
 void AST::parse()
 {
     unique_ptr<const Statement> stp;
-    for (unique_ptr<File>& filep : files)
+    for (const char* filename : filenames)
     {
-        FileStmtStream filess(make_shared<Lexer>(filep->filename));
+        vector<unique_ptr<const Statement>> stv;
+        FileStmtStream filess(make_shared<Lexer>(filename));
         while (filess.getNextStatement(stp))
-            filep->statements.push_back(std::move(stp));
+            stv.push_back(std::move(stp));
+        files.push_back(make_unique<File>(std::move(stv), filename));
     }
 }
 
 void AST::configure()
 {
-    for (unique_ptr<File>& filep : files)
+    for (const unique_ptr<File>& filep : files)
     {
-        for (unique_ptr<const Statement>& stp : filep->statements) {
+        for (const unique_ptr<const Statement>& stp : filep->statements) {
             stp->run(configureRunner);
         }
     }

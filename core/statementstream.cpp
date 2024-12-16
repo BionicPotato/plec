@@ -46,6 +46,7 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
             switch (tok.id)
             {
                 case TOK_OPENCURLYBR: {
+                    /*
                     unique_ptr<BlockExpr> blockp = make_unique<BlockExpr>(tok);
                     BlockExpr* blockrp = blockp.get();
                     exprs.emplace_back(tok, std::move(blockp), nullptr);
@@ -53,6 +54,15 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     unique_ptr<const Statement> blockstp;
                     while (blockss.getNextStatement(blockstp))
                         blockrp->statements.push_back(std::move(blockstp));
+                    */
+                    vector<unique_ptr<const Statement>> stv;
+                    
+                    BlockStmtStream blockss(lexp);
+                    unique_ptr<const Statement> blockstp;
+                    while (blockss.getNextStatement(blockstp))
+                        stv.push_back(std::move(blockstp));
+
+                    exprs.emplace_back(tok, make_unique<BlockExpr>(tok, std::move(stv)), nullptr);
                 }
                 break;
 
@@ -65,8 +75,13 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     if (astType(exprp, ArrayExpr)) {
                         arrayp = moveCast<ArrayExpr>(exprp);
                     } else {
+                        /*
                         arrayp = make_unique<ArrayExpr>(tok);
                         arrayp->expressions.push_back(std::move(exprp));
+                        */
+                        vector<unique_ptr<const Expression>> exprv;
+                        exprv.push_back(std::move(exprp));
+                        arrayp = make_unique<ArrayExpr>(tok, std::move(exprv));
                     }
 
                     exprs.emplace_back(tok, std::move(arrayp), nullptr);

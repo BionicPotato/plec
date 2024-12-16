@@ -11,11 +11,12 @@
 class AST: public ASTVisitable
 {
     public:
+        const std::vector<const char*> filenames;
         std::vector<std::unique_ptr<File>> files;
         std::vector<std::unique_ptr<Target>> targets;
         ASTConfigureRunner configureRunner;
 
-        AST(std::vector<const char*> args);
+        AST(std::vector<const char*>&& args);
         virtual void accept(ASTVisitor& visitor) const;
         void parse();
         void configure();

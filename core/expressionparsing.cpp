@@ -116,20 +116,18 @@ void parseCalls(list<ParsingExpression>& exprs, list<list<ParsingExpression>::it
 
             if (!callee->exprp) throw UnexpectedTokenException(callee->token);
 
-            unique_ptr<FunctionCallExpr> fcep = make_unique<FunctionCallExpr>(i->token, std::move(callee->exprp));
-            eraseExpr(exprs, callee);
+            vector<unique_ptr<const Expression>> argv;
 
             //if there's nothing to the right, it's ok, just add no arguments to the function call
             if (!(args == exprs.end() || !args->exprp)) {
                 if (!astType(args->exprp, ArrayExpr)) throw UnexpectedTokenException(args->token);
                 ArrayExpr* aep = (ArrayExpr*)args->exprp.get();
-                for (unique_ptr<const Expression>& arg : aep->expressions) {
-                    fcep->args.push_back(std::move(arg));
-                }
+                argv = std::move(aep->expressions);
                 eraseExpr(exprs, args);
             }
 
-            i->exprp = std::move(fcep);
+            i->exprp = make_unique<FunctionCallExpr>(i->token, std::move(callee->exprp), std::move(argv));
+            eraseExpr(exprs, callee);
         }
     }
 }
@@ -168,10 +166,10 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
         if (!lhs->exprp) throw UnexpectedTokenException(lhs->token);
         if (!rhs->exprp) throw UnexpectedTokenException(rhs->token);
 
-        unique_ptr<ArrayExpr> arrayp = make_unique<ArrayExpr>(i->token);
+        vector<unique_ptr<const Expression>> exprv;
 
-        arrayp->expressions.push_back(std::move(lhs->exprp));
-        arrayp->expressions.push_back(std::move(rhs->exprp));
+        exprv.push_back(std::move(lhs->exprp));
+        exprv.push_back(std::move(rhs->exprp));
 
         eraseExpr(exprs, lhs);
         eraseExpr(exprs, rhs);
@@ -183,7 +181,7 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
 
             if (!item->exprp) throw UnexpectedTokenException(item->token);
 
-            arrayp->expressions.push_back(std::move(item->exprp));
+            exprv.push_back(std::move(item->exprp));
 
             eraseExpr(exprs, item);
 
@@ -192,7 +190,7 @@ void parseCommas(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
             eraseExpr(exprs, i);
         }
         
-        commas.front()->exprp = std::move(arrayp);
+        commas.front()->exprp = std::make_unique<ArrayExpr>(commas.front()->token, std::move(exprv));
     }
 }
 

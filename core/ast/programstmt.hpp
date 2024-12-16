@@ -7,9 +7,9 @@
 class ProgramStmt: public Statement
 {
     public:
-        std::string programName;
+        const std::string programName;
 
-        ProgramStmt(Token& token, std::string programName);
+        ProgramStmt(Token& token, const std::string& programName);
 	virtual void accept(ASTVisitor& visitor) const;
         virtual void run(Runner& r) const;
 };

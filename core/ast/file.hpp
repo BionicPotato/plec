@@ -6,7 +6,7 @@
 class File: public StatementList
 {
     public:
-	const char* filename;
-        File(const char* filename);
+	const char* const filename;
+        File(std::vector<std::unique_ptr<const Statement>>&& statements, const char* const filename);
 };
 

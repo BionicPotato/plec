@@ -6,8 +6,8 @@
 class BinOpExpression: public Expression
 {
     public:
-        std::unique_ptr<const Expression> lhs;
-        std::unique_ptr<const Expression> rhs;
+        const std::unique_ptr<const Expression> lhs;
+        const std::unique_ptr<const Expression> rhs;
 
         BinOpExpression(Token& token, std::unique_ptr<const Expression> lhs, std::unique_ptr<const Expression> rhs);
 };

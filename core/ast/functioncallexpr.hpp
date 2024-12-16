@@ -8,10 +8,10 @@ class Expression;
 class FunctionCallExpr: public Expression
 {
     public:
-        std::unique_ptr<const Expression> callee;
-        std::vector<std::unique_ptr<const Expression>> args;
+        const std::unique_ptr<const Expression> callee;
+        const std::vector<std::unique_ptr<const Expression>> args;
 
-        FunctionCallExpr(Token& token, std::unique_ptr<const Expression> callee);
+        FunctionCallExpr(Token& token, std::unique_ptr<const Expression> callee, std::vector<std::unique_ptr<const Expression>>&& args);
         virtual void accept(ASTVisitor& visitor) const;
 };
 

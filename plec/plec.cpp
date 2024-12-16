@@ -35,7 +35,7 @@ int main(int argc, char** argv)
         astfns.push_back(n);
     }
 
-    AST ast(astfns);
+    AST ast(std::move(astfns));
     try {
         ast.parse();
         ast.configure();

@@ -3,33 +3,39 @@ project(plec-test)
 
 enable_testing()
 
-add_executable(basic basic.cpp test.cpp)
-target_link_libraries(basic optimized plec-core debug plec-core.db)
-add_test(NAME basic COMMAND $<TARGET_FILE:basic>)
+function(test name)
+    add_executable(${name} ${name}.cpp test.cpp)
+    target_link_libraries(${name} optimized plec-core debug plec-core.db)
+    add_test(NAME ${name} COMMAND $<TARGET_FILE:${name}>)
+endfunction()
 
-add_executable(getnextstatement getnextstatement.cpp test.cpp)
-target_link_libraries(getnextstatement optimized plec-core debug plec-core.db)
-# Copy getnextstatement.ple to binary dir
-add_custom_command(
-    TARGET getnextstatement POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/getnextstatement.ple
-            ${CMAKE_CURRENT_BINARY_DIR}/getnextstatement.ple
+test(basic)
+test(getnextstatement)
+test(parsedecl)
+test(regress-23)
+test(targets)
+
+set(files
+    getnextstatement.ple
+    regress-23.ple
+    targets0.ple
+    targets1.ple
+    targets2.ple
 )
-add_test(NAME getnextstatement COMMAND $<TARGET_FILE:getnextstatement>)
-
-add_executable(parsedecl parsedecl.cpp test.cpp)
-target_link_libraries(parsedecl optimized plec-core debug plec-core.db)
-add_test(NAME parsedecl COMMAND $<TARGET_FILE:parsedecl>)
-
-add_executable(regress-23 regress-23.cpp test.cpp)
-target_link_libraries(regress-23 optimized plec-core debug plec-core.db)
-# Copy regress-23.ple to binary dir
-add_custom_command(
-    TARGET regress-23 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/regress-23.ple
-            ${CMAKE_CURRENT_BINARY_DIR}/regress-23.ple
+set(targets
+    getnextstatement
+    regress-23
+    targets
+    targets
+    targets
 )
-add_test(NAME regress-23 COMMAND $<TARGET_FILE:regress-23>)
+
+foreach(file target IN ZIP_LISTS files targets)
+    add_custom_command(
+        TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/${file}
+                ${CMAKE_CURRENT_BINARY_DIR}/${file}
+    )
+endforeach()
 

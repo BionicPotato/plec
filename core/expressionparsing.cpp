@@ -17,6 +17,18 @@ ParsingExpression::ParsingExpression
 )
 : token(token), exprp(std::move(exprp)), itlist(itlist) {}
 
+void addExpr(list<ParsingExpression>& exprs, Token token, unique_ptr<Expression> exprp)
+{
+    exprs.emplace_back(token, std::move(exprp), nullptr);
+}
+
+void addExpr(list<ParsingExpression>& exprs, Token token, list<list<ParsingExpression>::iterator>* itlist)
+{
+    exprs.emplace_back(token, unique_ptr<Expression>(nullptr), itlist);
+    itlist->push_back(prev(exprs.end()));
+    exprs.back().it = prev(itlist->end());
+}
+
 void eraseExpr(list<ParsingExpression>& exprs, list<ParsingExpression>::iterator it)
 {
     if (it->itlist != nullptr)

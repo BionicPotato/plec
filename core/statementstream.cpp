@@ -46,15 +46,6 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
             switch (tok.id)
             {
                 case TOK_OPENCURLYBR: {
-                    /*
-                    unique_ptr<BlockExpr> blockp = make_unique<BlockExpr>(tok);
-                    BlockExpr* blockrp = blockp.get();
-                    exprs.emplace_back(tok, std::move(blockp), nullptr);
-                    BlockStmtStream blockss(lexp);
-                    unique_ptr<const Statement> blockstp;
-                    while (blockss.getNextStatement(blockstp))
-                        blockrp->statements.push_back(std::move(blockstp));
-                    */
                     vector<unique_ptr<const Statement>> stv;
                     
                     BlockStmtStream blockss(lexp);
@@ -62,7 +53,7 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     while (blockss.getNextStatement(blockstp))
                         stv.push_back(std::move(blockstp));
 
-                    exprs.emplace_back(tok, make_unique<BlockExpr>(tok, std::move(stv)), nullptr);
+                    addExpr(exprs, tok, make_unique<BlockExpr>(tok, std::move(stv)));
                 }
                 break;
 
@@ -75,60 +66,44 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     if (astType(exprp, ArrayExpr)) {
                         arrayp = moveCast<ArrayExpr>(exprp);
                     } else {
-                        /*
-                        arrayp = make_unique<ArrayExpr>(tok);
-                        arrayp->expressions.push_back(std::move(exprp));
-                        */
                         vector<unique_ptr<const Expression>> exprv;
                         exprv.push_back(std::move(exprp));
                         arrayp = make_unique<ArrayExpr>(tok, std::move(exprv));
                     }
 
-                    exprs.emplace_back(tok, std::move(arrayp), nullptr);
+                    addExpr(exprs, tok, std::move(arrayp));
                 }
                 break;
 
                 case TOK_OPENPAREN: {
                     unique_ptr<Expression> parenexprp;
                     parenexprp = getExpression(tok, TOK_CLOSEPAREN);
-                    exprs.emplace_back(parenexprp->token, std::move(parenexprp), nullptr);
+                    addExpr(exprs, tok, std::move(parenexprp));
                 }
                 break;
                 
                 case TOK_IDENTIFIER:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &identifiers);
-                    identifiers.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(identifiers.end());
+                    addExpr(exprs, tok, &identifiers);
                 break;
 
                 case TOK_STRING:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &strings);
-                    strings.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(strings.end());
+                    addExpr(exprs, tok, &strings);
                 break;
 
                 case TOK_CALL:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &calls);
-                    calls.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(calls.end());
+                    addExpr(exprs, tok, &calls);
                 break;
 
                 case TOK_PLUS:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &addsub);
-                    addsub.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(addsub.end());
+                    addExpr(exprs, tok, &addsub);
                 break;
                 
                 case TOK_COLON:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &colons);
-                    colons.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(colons.end());
+                    addExpr(exprs, tok, &colons);
                 break;
 
                 case TOK_COMMA:
-                    exprs.emplace_back(tok, unique_ptr<Expression>(nullptr), &commas);
-                    commas.push_back(prev(exprs.end()));
-                    exprs.back().it = prev(commas.end());
+                    addExpr(exprs, tok, &commas);
                 break;
 
                 case TOK_UNKNOWN:

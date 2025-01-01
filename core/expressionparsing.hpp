@@ -9,11 +9,14 @@ struct ParsingExpression
 {
     Token token;
     std::unique_ptr<Expression> exprp;
-    std::list<std::list<ParsingExpression>::iterator>*itlist;
+    std::list<std::list<ParsingExpression>::iterator>* itlist;
     std::list<std::list<ParsingExpression>::iterator>::iterator it;
 
     ParsingExpression(Token token, std::unique_ptr<Expression> exprp, std::list<std::list<ParsingExpression>::iterator>* itlist);
 };
+
+void addExpr(std::list<ParsingExpression>& exprs, Token token, std::unique_ptr<Expression> exprp);
+void addExpr(std::list<ParsingExpression>& exprs, Token token, std::list<std::list<ParsingExpression>::iterator>* itlist);
 
 void exprParse
 (

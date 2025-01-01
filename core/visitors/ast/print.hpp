@@ -14,6 +14,7 @@ class ASTPrintVisitor: public ASTVisitor
         virtual void doArrayExpr(const ArrayExpr& ae);
         virtual void doAST(const AST& ast);
         virtual void doBlockExpr(const BlockExpr& be);
+        virtual void doCurlyBrExpr(const CurlyBrExpr& cbe);
         virtual void doDeclExpr(const DeclExpr& de);
         virtual void doExpression(const Expression& expr);
         virtual void doFunctionCallExpr(const FunctionCallExpr& fce);

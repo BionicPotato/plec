@@ -17,6 +17,8 @@ add_library(plec-core SHARED
     ast/binopexpression.hpp
     ast/blockexpr.cpp
     ast/blockexpr.hpp
+    ast/curlybrexpr.cpp
+    ast/curlybrexpr.hpp
     ast/declexpr.cpp
     ast/declexpr.hpp
     ast/expression.cpp

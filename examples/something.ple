@@ -1,5 +1,6 @@
 program something;
 
+[SomeType somevar: someValue, OtherType othervar: otherValue]
 { do_something $; };
 
 something $ ["something" + something, something_else, more_things];

@@ -24,7 +24,12 @@ void addExpr(list<ParsingExpression>& exprs, Token token, unique_ptr<Expression>
 
 void addExpr(list<ParsingExpression>& exprs, Token token, list<list<ParsingExpression>::iterator>* itlist)
 {
-    exprs.emplace_back(token, unique_ptr<Expression>(nullptr), itlist);
+    addExpr(exprs, token, unique_ptr<Expression>(nullptr), itlist);
+}
+
+void addExpr(list<ParsingExpression>& exprs, Token token, unique_ptr<Expression> exprp, list<list<ParsingExpression>::iterator>* itlist)
+{
+    exprs.emplace_back(token, std::move(exprp), itlist);
     itlist->push_back(prev(exprs.end()));
     exprs.back().it = prev(itlist->end());
 }
@@ -114,6 +119,27 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
             var->exprp = std::move(dep);
 
             eraseExpr(exprs, type);
+        }
+    }
+}
+
+void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
+{
+    for (auto i : curlybrs)
+    {
+        if (i == exprs.begin()) continue;
+        list<ParsingExpression>::iterator dataBlock = prev(i);
+        
+        if (!dataBlock->exprp) continue;
+        if (!astType(dataBlock->exprp, ArrayExpr)) continue;
+        unique_ptr<ArrayExpr> arrayp = moveCast<ArrayExpr>(dataBlock->exprp);
+
+        if (!i->exprp) throw UnexpectedTokenException(i->token);
+
+        if (astType(i->exprp, CurlyBrExpr)) {
+            unique_ptr<CurlyBrExpr> curlybrp = moveCast<CurlyBrExpr>(i->exprp);
+            i->exprp = make_unique<BlockExpr>(i->token, std::move(arrayp), std::move(curlybrp));
+            eraseExpr(exprs, dataBlock);
         }
     }
 }
@@ -212,6 +238,7 @@ void exprParse
 
     list<list<ParsingExpression>::iterator>& identifiers,
     list<list<ParsingExpression>::iterator>& strings,
+    list<list<ParsingExpression>::iterator>& curlybrs,
     list<list<ParsingExpression>::iterator>& calls,
     list<list<ParsingExpression>::iterator>& addsub,
     list<list<ParsingExpression>::iterator>& colons,
@@ -221,6 +248,7 @@ void exprParse
         ctl(&parseVariables, exprs, identifiers);
         ctl(&parseStrings, exprs, strings);
         ctl(&parseDecl, exprs, identifiers);
+        ctl(&parseBlocks, exprs, curlybrs);
         ctl(&parseCalls, exprs, calls);
         ctl(&parseAddSub, exprs, addsub);
         ctl(&parseVariableAssigns, exprs, colons);

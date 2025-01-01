@@ -81,8 +81,18 @@ void ASTPrintVisitor::doBlockExpr(const BlockExpr& be)
     cout << string(indent, '\t')
          << "Block:"
          << endl;
+    ++indent;
+    be.dataBlock->accept(*this);
+    be.statementBlock->accept(*this);
+}
+
+void ASTPrintVisitor::doCurlyBrExpr(const CurlyBrExpr& cbe)
+{
+    cout << string(indent, '\t')
+         << "Statements:"
+         << endl;
     indent++;
-    for (const unique_ptr<const Statement>& stp : be.statements)
+    for (const unique_ptr<const Statement>& stp : cbe.statements)
         stp->accept(*this);
     indent--;
 }

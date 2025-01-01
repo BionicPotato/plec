@@ -34,6 +34,7 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
     
     list<list<ParsingExpression>::iterator> identifiers;
     list<list<ParsingExpression>::iterator> strings;
+    list<list<ParsingExpression>::iterator> curlybrs;
     list<list<ParsingExpression>::iterator> calls;
     list<list<ParsingExpression>::iterator> addsub;
     list<list<ParsingExpression>::iterator> colons;
@@ -53,7 +54,7 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
                     while (blockss.getNextStatement(blockstp))
                         stv.push_back(std::move(blockstp));
 
-                    addExpr(exprs, tok, make_unique<BlockExpr>(tok, std::move(stv)));
+                    addExpr(exprs, tok, make_unique<CurlyBrExpr>(tok, std::move(stv)), &curlybrs);
                 }
                 break;
 
@@ -122,6 +123,7 @@ unique_ptr<Expression> StatementStream::getExpression(const Token& start, TokenI
 
             identifiers,
             strings,
+            curlybrs,
             calls,
             addsub,
             colons,

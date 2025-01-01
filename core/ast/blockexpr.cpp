@@ -1,8 +1,8 @@
 #include "blockexpr.hpp"
 #include "../visitors/astvisitor.hpp"
 
-BlockExpr::BlockExpr(Token& token, std::vector<std::unique_ptr<const Statement>>&& statements)
-: Expression(token), statements(std::move(statements)) {}
+BlockExpr::BlockExpr(Token& token, std::unique_ptr<const ArrayExpr> dataBlock, std::unique_ptr<const CurlyBrExpr> statementBlock)
+: Expression(token), dataBlock(std::move(dataBlock)), statementBlock(std::move(statementBlock)) {}
 
 void BlockExpr::accept(ASTVisitor& visitor) const
 {

@@ -17,6 +17,7 @@ struct ParsingExpression
 
 void addExpr(std::list<ParsingExpression>& exprs, Token token, std::unique_ptr<Expression> exprp);
 void addExpr(std::list<ParsingExpression>& exprs, Token token, std::list<std::list<ParsingExpression>::iterator>* itlist);
+void addExpr(std::list<ParsingExpression>& exprs, Token token, std::unique_ptr<Expression> exprp, std::list<std::list<ParsingExpression>::iterator>* itlist);
 
 void exprParse
 (
@@ -24,6 +25,7 @@ void exprParse
 
     std::list<std::list<ParsingExpression>::iterator>& identifiers,
     std::list<std::list<ParsingExpression>::iterator>& strings,
+    std::list<std::list<ParsingExpression>::iterator>& curlybrs,
     std::list<std::list<ParsingExpression>::iterator>& calls,
     std::list<std::list<ParsingExpression>::iterator>& addsub,
     std::list<std::list<ParsingExpression>::iterator>& colons,

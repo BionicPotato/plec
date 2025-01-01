@@ -1,14 +1,16 @@
 #pragma once
 
 #include "expression.hpp"
-#include <vector>
+#include "arrayexpr.hpp"
+#include "curlybrexpr.hpp"
 
 class BlockExpr: public Expression
 {
     public:
-        const std::vector<std::unique_ptr<const Statement>> statements;
+        const std::unique_ptr<const ArrayExpr> dataBlock;
+        const std::unique_ptr<const CurlyBrExpr> statementBlock;
 
-        BlockExpr(Token& token, std::vector<std::unique_ptr<const Statement>>&& statements);
+        BlockExpr(Token& token, std::unique_ptr<const ArrayExpr> dataBlock, std::unique_ptr<const CurlyBrExpr> statementBlock);
         virtual void accept(ASTVisitor& visitor) const;
 };
 

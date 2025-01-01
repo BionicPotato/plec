@@ -123,29 +123,6 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
     }
 }
 
-/* void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
-{
-    for (auto i : curlybrs)
-    {
-        unique_ptr<ArrayExpr> arrayp;
-
-        if (i == exprs.begin()) continue;
-        list<ParsingExpression>::iterator dataBlock = prev(i);
-        
-        if (!dataBlock->exprp) continue;
-        if (!astType(dataBlock->exprp, ArrayExpr)) continue;
-        arrayp = moveCast<ArrayExpr>(dataBlock->exprp);
-
-        if (!i->exprp) throw UnexpectedTokenException(i->token);
-
-        if (astType(i->exprp, CurlyBrExpr)) {
-            unique_ptr<CurlyBrExpr> curlybrp = moveCast<CurlyBrExpr>(i->exprp);
-            i->exprp = make_unique<BlockExpr>(i->token, std::move(arrayp), std::move(curlybrp));
-            eraseExpr(exprs, dataBlock);
-        }
-    }
-}*/
-
 void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
 {
     for (auto i : curlybrs)

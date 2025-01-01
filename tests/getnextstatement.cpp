@@ -303,12 +303,12 @@ int main()
     const BlockExpr* blockp = static_cast<const BlockExpr*>(vaep->rhs.get());
     
     require(
-        blockp->statements.size() == 3,
+        blockp->statementBlock->statements.size() == 3,
         "Block does not have 3 statements");
     require(
-        astType(blockp->statements[0], AddExpr),
+        astType(blockp->statementBlock->statements[0], AddExpr),
         "Block's first statement is not AddExpr");
-    const AddExpr* adep = static_cast<const AddExpr*>(blockp->statements[0].get());
+    const AddExpr* adep = static_cast<const AddExpr*>(blockp->statementBlock->statements[0].get());
     require(
         adep->lhs != nullptr,
         "Block's first statement does not have a left-hand side");
@@ -329,9 +329,9 @@ int main()
         "Block's first statement RHS is not '\"bbb\"'");
 
     require(
-        astType(blockp->statements[1], FunctionCallExpr),
+        astType(blockp->statementBlock->statements[1], FunctionCallExpr),
         "Block's second statement is not FunctionCallExpr");
-    fcep = static_cast<const FunctionCallExpr*>(blockp->statements[1].get());
+    fcep = static_cast<const FunctionCallExpr*>(blockp->statementBlock->statements[1].get());
     require(
         fcep->callee != nullptr,
         "Block's second statement does not have a Callee");
@@ -346,9 +346,9 @@ int main()
         "Block's second statement has arguments");
     
     require(
-        astType(blockp->statements[2], FunctionCallExpr),
+        astType(blockp->statementBlock->statements[2], FunctionCallExpr),
         "Block's third statement is not FunctionCallExpr");
-    fcep = static_cast<const FunctionCallExpr*>(blockp->statements[2].get());
+    fcep = static_cast<const FunctionCallExpr*>(blockp->statementBlock->statements[2].get());
     require(
         fcep->callee != nullptr,
         "Block's third statement does not have a Callee");

@@ -11,6 +11,7 @@ endfunction()
 
 test(basic)
 test(getnextstatement)
+test(parseblocks)
 test(parsedecl)
 test(regress-23)
 test(targets)

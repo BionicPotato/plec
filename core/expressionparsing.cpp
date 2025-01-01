@@ -123,16 +123,18 @@ void parseDecl(list<ParsingExpression>& exprs, list<list<ParsingExpression>::ite
     }
 }
 
-void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
+/* void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
 {
     for (auto i : curlybrs)
     {
+        unique_ptr<ArrayExpr> arrayp;
+
         if (i == exprs.begin()) continue;
         list<ParsingExpression>::iterator dataBlock = prev(i);
         
         if (!dataBlock->exprp) continue;
         if (!astType(dataBlock->exprp, ArrayExpr)) continue;
-        unique_ptr<ArrayExpr> arrayp = moveCast<ArrayExpr>(dataBlock->exprp);
+        arrayp = moveCast<ArrayExpr>(dataBlock->exprp);
 
         if (!i->exprp) throw UnexpectedTokenException(i->token);
 
@@ -141,6 +143,31 @@ void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::i
             i->exprp = make_unique<BlockExpr>(i->token, std::move(arrayp), std::move(curlybrp));
             eraseExpr(exprs, dataBlock);
         }
+    }
+}*/
+
+void parseBlocks(list<ParsingExpression>& exprs, list<list<ParsingExpression>::iterator>& curlybrs)
+{
+    for (auto i : curlybrs)
+    {
+        if (!i->exprp) throw UnexpectedTokenException(i->token);
+        if (!astType(i->exprp, CurlyBrExpr)) throw UnexpectedTokenException(i->token);
+        unique_ptr<CurlyBrExpr> curlybrp = moveCast<CurlyBrExpr>(i->exprp);
+
+        // take an ArrayExpr if it exists, else create an empty one
+        unique_ptr<ArrayExpr> arrayp;
+        if (i == exprs.begin()) arrayp = make_unique<ArrayExpr>(i->token, vector<unique_ptr<const Expression>>());
+        else {
+            list<ParsingExpression>::iterator dataBlock = prev(i);
+            if (!dataBlock->exprp || !astType(dataBlock->exprp, ArrayExpr))
+                arrayp = make_unique<ArrayExpr>(i->token, vector<unique_ptr<const Expression>>());
+            else {
+                arrayp = moveCast<ArrayExpr>(dataBlock->exprp);
+                eraseExpr(exprs, dataBlock);
+            }
+        }
+
+        i->exprp = make_unique<BlockExpr>(i->token, std::move(arrayp), std::move(curlybrp));
     }
 }
 

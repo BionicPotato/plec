@@ -84,6 +84,7 @@ void ASTPrintVisitor::doBlockExpr(const BlockExpr& be)
     ++indent;
     be.dataBlock->accept(*this);
     be.statementBlock->accept(*this);
+    --indent;
 }
 
 void ASTPrintVisitor::doCurlyBrExpr(const CurlyBrExpr& cbe)
